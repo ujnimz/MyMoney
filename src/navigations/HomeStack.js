@@ -3,6 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '_theme/ThemeContext';
 import HomeScreen from '_scenes/HomeScreen';
+import SplashScreen from '_scenes/SplashScreen';
 import SettingsScreen from '_scenes/SettingsScreen';
 import CategoryScreen from '_scenes/CategoryScreen';
 import AddCategoryScreen from '_scenes/AddCategoryScreen';

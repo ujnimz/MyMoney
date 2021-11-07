@@ -4,14 +4,17 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
   signOut,
 } from 'firebase/auth';
 import {getStorage} from 'firebase/storage';
 import {
   getFirestore,
   doc,
+  getDoc,
   addDoc,
   setDoc,
+  updateDoc,
   serverTimestamp,
 } from 'firebase/firestore';
 
@@ -43,10 +46,13 @@ export {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
   signOut,
   db,
   doc,
+  getDoc,
   addDoc,
   setDoc,
+  updateDoc,
   serverTimestamp,
 };

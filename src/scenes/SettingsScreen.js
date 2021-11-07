@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, Image, View, TouchableOpacity} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '_theme/ThemeContext';
 import ColorCard from '_theme/ColorCard';
@@ -9,24 +9,41 @@ import TextButton from '_components/atoms/TextButton';
 // REDUX
 import {connect} from 'react-redux';
 import {logoutUser} from '_redux/actions/auth';
+import {getUser} from '_redux/actions/user';
 
-const SettingsScreen = ({navigation, authState, logoutUser}) => {
+const SettingsScreen = ({
+  navigation,
+  authState,
+  userState,
+  logoutUser,
+  getUser,
+}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
-  const {isLoading} = authState;
+  const {isLoading, userData} = userState;
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.hero}>
         <View style={styles.avatar}>
-          <Ionicons
-            name='person-outline'
-            color={colors.primary.content}
-            size={60}
-          />
+          {isLoading || !userData || userData.image === '' ? (
+            <Ionicons
+              name='person-outline'
+              color={colors.primary.content}
+              size={60}
+            />
+          ) : (
+            <Image style={styles.image} source={{uri: userData.image}} />
+          )}
         </View>
-        <Text style={styles.username}>Ujith Nimantha</Text>
+        <Text style={styles.username}>
+          {isLoading || !userData ? '...' : userData.name}
+        </Text>
       </View>
 
       <ColorCard backgroundColor={colors.surface.focus}>
@@ -116,6 +133,11 @@ const useStyles = colors =>
       borderRadius: 100,
       marginBottom: 10,
       backgroundColor: colors.primary.main,
+      overflow: 'hidden',
+    },
+    image: {
+      height: 100,
+      width: 100,
     },
     label: {
       fontSize: 14,
@@ -135,11 +157,14 @@ const useStyles = colors =>
 SettingsScreen.propTypes = {
   navigation: PropTypes.object.isRequired,
   authState: PropTypes.object.isRequired,
+  userState: PropTypes.object.isRequired,
   logoutUser: PropTypes.func.isRequired,
+  getUser: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   authState: state.authState,
+  userState: state.userState,
 });
 
-export default connect(mapStateToProps, {logoutUser})(SettingsScreen);
+export default connect(mapStateToProps, {logoutUser, getUser})(SettingsScreen);

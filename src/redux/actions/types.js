@@ -8,3 +8,9 @@ export const LOGOUT_FAIL = 'LOGOUT_FAIL';
 export const AUTH_LOADING = 'AUTH_LOADING';
 export const AUTH_SUCCESS = 'AUTH_SUCCESS';
 export const AUTH_FAIL = 'AUTH_FAIL';
+// USER
+export const USER_LOADING = 'USER_LOADING';
+export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
+export const GET_USER_FAIL = 'GET_USER_FAIL';
+export const UPDATE_USER_SUCCESS = 'UPDATE_USER_SUCCESS';
+export const UPDATE_USER_FAIL = 'UPDATE_USER_FAIL';

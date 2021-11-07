@@ -65,8 +65,6 @@ const CategoryScreen = ({navigation}) => {
     navigation.navigate('Categories');
   };
 
-  console.log(catList);
-
   const onAddCategory = cat => {
     navigation.navigate('AddCategory', {cat, onSaveCategory});
   };

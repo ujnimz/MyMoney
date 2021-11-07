@@ -15,6 +15,7 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
   signOut,
   db,
   doc,
@@ -79,7 +80,6 @@ export const loginUser = user => async dispatch => {
       payload: userCredential.user,
     });
   } catch (error) {
-    console.log(error.code);
     switch (error.code) {
       case 'auth/invalid-email':
         Alert.alert('Invalid', 'Please check your email address again.');
@@ -123,8 +123,8 @@ export const registerUser = user => async dispatch => {
     );
     await setDoc(doc(db, 'users', userCredential.user.uid), {
       name: name,
-      theme: 'light',
       currency: 'BHD',
+      image: '',
       createdAt: serverTimestamp(),
     });
     return dispatch({
