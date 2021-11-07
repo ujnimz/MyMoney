@@ -79,6 +79,7 @@ export const loginUser = user => async dispatch => {
       payload: userCredential.user,
     });
   } catch (error) {
+    console.log(error.code);
     switch (error.code) {
       case 'auth/invalid-email':
         Alert.alert('Invalid', 'Please check your email address again.');
