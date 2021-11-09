@@ -8,7 +8,11 @@ const FormTextInput = ({...rest}) => {
 
   return (
     <View style={styles.container}>
-      <TextInput style={styles.input} {...rest} />
+      <TextInput
+        style={styles.input}
+        placeholderTextColor={colors.text.focus}
+        {...rest}
+      />
     </View>
   );
 };
@@ -25,7 +29,7 @@ const useStyles = colors =>
       borderRadius: 10,
       borderWidth: 1,
       backgroundColor: colors.surface.main,
-      borderColor: colors.black.main,
+      borderColor: colors.text.focus,
       color: colors.text.main,
     },
   });

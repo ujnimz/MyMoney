@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 
-const TextButton = ({
+const FormButton = ({
   text,
   bgColor,
   textColor,
@@ -57,4 +57,4 @@ const useStyles = colors =>
     },
   });
 
-export default TextButton;
+export default FormButton;

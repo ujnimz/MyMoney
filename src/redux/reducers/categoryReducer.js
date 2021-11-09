@@ -7,6 +7,8 @@ import {
   ADD_CAT_FAIL,
   UPDATE_CAT_SUCCESS,
   UPDATE_CAT_FAIL,
+  DELETE_CAT_SUCCESS,
+  DELETE_CAT_FAIL,
 } from '_redux/actions/types';
 
 const initialState = {
@@ -59,6 +61,18 @@ const categoryReducer = (state = initialState, action) => {
         isCompleted: true,
       };
     case UPDATE_CAT_FAIL:
+      return {
+        ...state,
+        isLoading: false,
+        isCompleted: false,
+      };
+    case DELETE_CAT_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        isCompleted: true,
+      };
+    case DELETE_CAT_FAIL:
       return {
         ...state,
         isLoading: false,

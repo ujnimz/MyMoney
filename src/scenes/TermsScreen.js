@@ -23,9 +23,9 @@ const TermsScreen = () => {
         specified in this document.
       </Text>
       <Text style={styles.text}>
-        By downloading the App you agree to these terms, which bind you. If you
-        do not accept these terms, you may not use the App and must stop
-        downloading it now.
+        By downloading and using the App you agree to these terms, which bind
+        you. If you do not accept these terms, you may not use the App and must
+        remove it from your device now.
       </Text>
       <Text style={styles.text}>
         Developer Contact: ujithnimantha@gmail.com

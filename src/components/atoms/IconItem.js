@@ -20,7 +20,7 @@ const IconItem = ({item, icon, setIcon, modalizeRef}) => {
         </View>
 
         <View>
-          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.title}>{item.name}</Text>
         </View>
       </View>
 

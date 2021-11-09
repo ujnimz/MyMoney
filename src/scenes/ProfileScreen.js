@@ -11,9 +11,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
-import TextButton from '_components/atoms/TextButton';
+import FormButton from '_components/atoms/FormButton';
 import FormTextInput from '_components/atoms/FormTextInput';
-import TextSelect from '_components/atoms/TextSelect';
+import FormTextSelect from '_components/atoms/FormTextSelect';
 import AddCurrencyModal from '_components/modals/AddCurrencyModal';
 // REDUX
 import {connect} from 'react-redux';
@@ -76,7 +76,7 @@ const ProfileScreen = ({getUser, updateUser, userState, authState}) => {
               name='image'
               placeholder='Image'
             />
-            <TextSelect
+            <FormTextSelect
               modalizeRef={modalizeRef}
               onChangeText={val => setCurrency(val)}
               name='currency'
@@ -84,7 +84,7 @@ const ProfileScreen = ({getUser, updateUser, userState, authState}) => {
               placeholder='Select Currency'
             />
 
-            <TextButton
+            <FormButton
               text='Update'
               bgColor={colors.primary.main}
               textColor={colors.primary.content}

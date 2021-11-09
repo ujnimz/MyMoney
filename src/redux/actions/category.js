@@ -7,6 +7,8 @@ import {
   ADD_CAT_FAIL,
   UPDATE_CAT_SUCCESS,
   UPDATE_CAT_FAIL,
+  DELETE_CAT_SUCCESS,
+  DELETE_CAT_FAIL,
 } from './types';
 
 import {
@@ -18,6 +20,7 @@ import {
   getDoc,
   getDocs,
   updateDoc,
+  deleteDoc,
   collection,
   query,
   where,
@@ -40,7 +43,7 @@ export const rollbackCompleted = () => {
   };
 };
 
-// GET_CATEGORY
+// GET CATEGORY
 export const getCat = () => async dispatch => {
   dispatch(setCatLoading());
   try {
@@ -78,7 +81,7 @@ export const getCat = () => async dispatch => {
   }
 };
 
-// ADD_CATEGORY
+// ADD CATEGORY
 export const addCat = newCat => async dispatch => {
   const {title, icon} = newCat;
   if (title === '') return Alert.alert('Invalid!', 'Please add category name.');
@@ -108,7 +111,7 @@ export const addCat = newCat => async dispatch => {
   }
 };
 
-// UPDATE_CATEGORY
+// UPDATE CATEGORY
 export const updateCat = newCat => async dispatch => {
   const {id, title, icon} = newCat;
   if (title === '') return Alert.alert('Invalid!', 'Please add category name.');
@@ -116,9 +119,8 @@ export const updateCat = newCat => async dispatch => {
   dispatch(setCatLoading());
   try {
     const user = auth.currentUser;
-    newCat.uid = user.uid;
 
-    await setDoc(doc(db, 'categories', id), newCat);
+    await setDoc(doc(db, 'categories', id), {uid: user.uid, title, icon});
     dispatch(getCat());
     return dispatch({
       type: UPDATE_CAT_SUCCESS,
@@ -133,6 +135,30 @@ export const updateCat = newCat => async dispatch => {
     }
     return dispatch({
       type: UPDATE_CAT_FAIL,
+    });
+  }
+};
+
+// DELETE CATEGORY
+export const deleteCat = catId => async dispatch => {
+  console.log(catId);
+  dispatch(setCatLoading());
+  try {
+    await deleteDoc(doc(db, 'categories', catId));
+    dispatch(getCat());
+    return dispatch({
+      type: DELETE_CAT_SUCCESS,
+    });
+  } catch (error) {
+    switch (error.code) {
+      case 'auth/invalid-email':
+        Alert.alert('Invalid', 'Please check your email address again.');
+        break;
+      default:
+        Alert.alert('Oops!', 'Something went wrong.');
+    }
+    return dispatch({
+      type: DELETE_CAT_FAIL,
     });
   }
 };

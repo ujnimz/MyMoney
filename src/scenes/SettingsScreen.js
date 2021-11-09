@@ -1,11 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, Text, Image, View, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  Image,
+  View,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '_theme/ThemeContext';
 import ColorCard from '_theme/ColorCard';
 import ThemeSwitch from '_components/atoms/ThemeSwitch';
-import TextButton from '_components/atoms/TextButton';
+import FormButton from '_components/atoms/FormButton';
 const loaderImage = require('_assets/loading.gif');
 // REDUX
 import {connect} from 'react-redux';
@@ -27,6 +34,27 @@ const SettingsScreen = ({
   useEffect(() => {
     getUser();
   }, []);
+
+  const handleLogout = () => {
+    return Alert.alert(
+      'Are your sure?',
+      'Are you sure you want to logout from MyMoney App?',
+      [
+        // The "Yes" button
+        {
+          text: 'Yes',
+          onPress: () => {
+            logoutUser();
+          },
+        },
+        // The "No" button
+        // Does nothing but dismiss the dialog when tapped
+        {
+          text: 'No',
+        },
+      ],
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -51,59 +79,61 @@ const SettingsScreen = ({
         </Text>
       </View>
 
-      <ColorCard backgroundColor={colors.surface.focus}>
-        <View style={styles.section}>
-          <Text style={styles.label}>Dark Theme</Text>
-          <ThemeSwitch />
-        </View>
-      </ColorCard>
+      <View style={styles.body}>
+        <ColorCard backgroundColor={colors.surface.focus}>
+          <View style={styles.section}>
+            <Text style={styles.label}>Dark Theme</Text>
+            <ThemeSwitch />
+          </View>
+        </ColorCard>
 
-      <ColorCard backgroundColor={colors.surface.focus}>
-        <View>
-          <TouchableOpacity
-            style={styles.section}
-            onPress={() => navigation.navigate('Categories')}
-          >
-            <Text style={styles.label}>Categories</Text>
-            <Ionicons
-              name='chevron-forward'
-              color={colors.text.main}
-              size={30}
-            />
-          </TouchableOpacity>
-          <View style={styles.sectionDivider}></View>
-          <TouchableOpacity
-            style={styles.section}
-            onPress={() => navigation.navigate('Profile')}
-          >
-            <Text style={styles.label}>Profile Settings</Text>
-            <Ionicons
-              name='chevron-forward'
-              color={colors.text.main}
-              size={30}
-            />
-          </TouchableOpacity>
-          <View style={styles.sectionDivider}></View>
-          <TouchableOpacity
-            style={styles.section}
-            onPress={() => navigation.navigate('TermsAndConditions')}
-          >
-            <Text style={styles.label}>Terms and Conditions</Text>
-            <Ionicons
-              name='chevron-forward'
-              color={colors.text.main}
-              size={30}
-            />
-          </TouchableOpacity>
-        </View>
-      </ColorCard>
+        <ColorCard backgroundColor={colors.surface.focus}>
+          <View>
+            <TouchableOpacity
+              style={styles.section}
+              onPress={() => navigation.navigate('Categories')}
+            >
+              <Text style={styles.label}>Categories</Text>
+              <Ionicons
+                name='chevron-forward'
+                color={colors.text.main}
+                size={30}
+              />
+            </TouchableOpacity>
+            <View style={styles.sectionDivider}></View>
+            <TouchableOpacity
+              style={styles.section}
+              onPress={() => navigation.navigate('Profile')}
+            >
+              <Text style={styles.label}>Profile Settings</Text>
+              <Ionicons
+                name='chevron-forward'
+                color={colors.text.main}
+                size={30}
+              />
+            </TouchableOpacity>
+            <View style={styles.sectionDivider}></View>
+            <TouchableOpacity
+              style={styles.section}
+              onPress={() => navigation.navigate('TermsAndConditions')}
+            >
+              <Text style={styles.label}>Terms and Conditions</Text>
+              <Ionicons
+                name='chevron-forward'
+                color={colors.text.main}
+                size={30}
+              />
+            </TouchableOpacity>
+          </View>
+        </ColorCard>
+      </View>
 
-      <TextButton
+      <FormButton
         text='Logout'
         bgColor={colors.primary.main}
         textColor={colors.primary.content}
         isAnimating={isLoading}
-        onPress={() => logoutUser()}
+        onPress={() => handleLogout()}
       />
     </View>
   );
@@ -115,13 +145,15 @@ const useStyles = colors =>
       flex: 1,
       justifyContent: 'flex-start',
       alignItems: 'stretch',
-      padding: 15,
       backgroundColor: colors.background.main,
     },
     hero: {
       padding: 20,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    body: {
+      padding: 15,
     },
     section: {
       flexDirection: 'row',

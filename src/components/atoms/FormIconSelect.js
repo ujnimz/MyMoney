@@ -1,23 +1,43 @@
 import React from 'react';
-import {StyleSheet, View, TextInput, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Keyboard,
+} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '_theme/ThemeContext';
 
-const TextSelect = ({modalizeRef, ...rest}) => {
+const FormIconSelect = ({modalizeRef, icon, ...rest}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
+
+  const handleOnIcon = () => {
+    Keyboard.dismiss();
+    modalizeRef.current?.open();
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.iconInputWrapper}>
         <View style={{flex: 1}}>
-          <TextInput name='icon' style={styles.input} {...rest} />
+          <TextInput
+            name='icon'
+            style={styles.input}
+            placeholderTextColor={colors.text.focus}
+            {...rest}
+          />
         </View>
         <TouchableOpacity
           style={styles.iconWrapper}
-          onPress={() => modalizeRef.current?.open()}
+          onPress={() => handleOnIcon()}
         >
-          <Ionicons name='add-circle' color={colors.primary.main} size={32} />
+          <Ionicons
+            name={icon === '' ? 'add-circle' : icon}
+            color={colors.primary.main}
+            size={32}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -38,7 +58,7 @@ const useStyles = colors =>
       padding: 12,
       borderRadius: 10,
       borderWidth: 1,
-      borderColor: colors.black.main,
+      borderColor: colors.text.focus,
       color: colors.text.main,
     },
     iconWrapper: {
@@ -47,4 +67,4 @@ const useStyles = colors =>
     },
   });
 
-export default TextSelect;
+export default FormIconSelect;

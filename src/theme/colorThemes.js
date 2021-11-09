@@ -7,7 +7,7 @@ export const lightColors = {
   },
   text: {
     main: '#424242',
-    focus: '#757575',
+    focus: '#909090',
     content: '#000000',
   },
   surface: {

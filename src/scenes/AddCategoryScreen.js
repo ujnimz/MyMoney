@@ -1,14 +1,20 @@
 import React, {useRef, useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Alert} from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import AddIconModal from '_components/modals/AddIconModal';
-import TextButton from '_components/atoms/TextButton';
+import FormButton from '_components/atoms/FormButton';
+import FormIconButton from '_components/atoms/FormIconButton';
 import FormTextInput from '_components/atoms/FormTextInput';
-import IconSelect from '_components/atoms/IconSelect';
+import FormIconSelect from '_components/atoms/FormIconSelect';
 // REDUX
 import {connect} from 'react-redux';
-import {addCat, updateCat, rollbackCompleted} from '_redux/actions/category';
+import {
+  addCat,
+  updateCat,
+  deleteCat,
+  rollbackCompleted,
+} from '_redux/actions/category';
 
 const AddCategoryScreen = ({
   route,
@@ -16,6 +22,7 @@ const AddCategoryScreen = ({
   catState,
   addCat,
   updateCat,
+  deleteCat,
   rollbackCompleted,
 }) => {
   const {colors} = useTheme();
@@ -33,11 +40,32 @@ const AddCategoryScreen = ({
   const modalizeRef = useRef(null);
 
   const onAdd = async () => {
-    await addCat({title, icon});
+    return await addCat({title, icon});
   };
 
   const onUpdate = async id => {
-    await updateCat({id, title, icon});
+    return await updateCat({id, title, icon});
+  };
+
+  const onDelete = id => {
+    return Alert.alert(
+      'Are your sure?',
+      'Are you sure you want to delete ' + title + ' from categories?',
+      [
+        // The "Yes" button
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await deleteCat(id);
+          },
+        },
+        // The "No" button
+        // Does nothing but dismiss the dialog when tapped
+        {
+          text: 'No',
+        },
+      ],
+    );
   };
 
   useEffect(() => {
@@ -58,7 +86,7 @@ const AddCategoryScreen = ({
         placeholder='Category Name'
         autoFocus={true}
       />
-      <IconSelect
+      <FormIconSelect
         modalizeRef={modalizeRef}
         icon={icon}
         onChangeText={val => setIcon(val)}
@@ -66,15 +94,32 @@ const AddCategoryScreen = ({
         placeholder='Category Icon'
         autoCapitalize='none'
       />
-      <TextButton
-        text={route.params.cat ? 'Update Category' : 'Add Category'}
-        bgColor={colors.primary.main}
-        textColor={colors.primary.content}
-        isAnimating={isLoading}
-        onPress={
-          route.params.cat ? () => onUpdate(route.params.cat.id) : () => onAdd()
-        }
-      />
+
+      <View style={styles.buttons}>
+        <FormButton
+          text={route.params.cat ? 'Update Category' : 'Add Category'}
+          bgColor={colors.primary.main}
+          textColor={colors.primary.content}
+          isAnimating={isLoading}
+          onPress={
+            route.params.cat
+              ? () => onUpdate(route.params.cat.id)
+              : () => onAdd()
+          }
+        />
+
+        {route.params.cat ? (
+          <FormIconButton
+            icon='trash'
+            bgColor={colors.primary.main}
+            textColor={colors.primary.content}
+            isAnimating={isLoading}
+            onPress={() => onDelete(route.params.cat.id)}
+          />
+        ) : (
+          <View></View>
+        )}
+      </View>
 
       <AddIconModal modalizeRef={modalizeRef} icon={icon} setIcon={setIcon} />
     </View>
@@ -90,12 +135,17 @@ const useStyles = colors =>
       backgroundColor: colors.background.main,
       paddingTop: 15,
     },
+    buttons: {
+      alignItems: 'stretch',
+      justifyContent: 'center',
+    },
   });
 
 AddCategoryScreen.propTypes = {
   catState: PropTypes.object.isRequired,
   addCat: PropTypes.func.isRequired,
   updateCat: PropTypes.func.isRequired,
+  deleteCat: PropTypes.func.isRequired,
   rollbackCompleted: PropTypes.func.isRequired,
 };
 
@@ -103,6 +153,9 @@ const mapStateToProps = state => ({
   catState: state.catState,
 });
 
-export default connect(mapStateToProps, {addCat, updateCat, rollbackCompleted})(
-  AddCategoryScreen,
-);
+export default connect(mapStateToProps, {
+  addCat,
+  updateCat,
+  deleteCat,
+  rollbackCompleted,
+})(AddCategoryScreen);

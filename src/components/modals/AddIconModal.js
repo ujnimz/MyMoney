@@ -147,7 +147,7 @@ const useStyles = colors =>
     },
     divider: {
       height: 1,
-      backgroundColor: colors.black.main,
+      backgroundColor: colors.text.focus,
     },
     header: {
       padding: 15,

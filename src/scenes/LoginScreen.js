@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
-import TextButton from '_components/atoms/TextButton';
+import FormButton from '_components/atoms/FormButton';
 import Logo from '_components/atoms/Logo';
 import FormTextInput from '_components/atoms/FormTextInput';
 // REDUX
@@ -108,7 +108,7 @@ const LoginScreen = ({navigation, loginUser, authStatus, authState}) => {
               textContentType='newPassword'
               secureTextEntry={true}
             />
-            <TextButton
+            <FormButton
               text='Login'
               bgColor={colors.surface.main}
               textColor={colors.surface.content}
@@ -122,7 +122,7 @@ const LoginScreen = ({navigation, loginUser, authStatus, authState}) => {
                 Don't have an account yet?
               </Text>
             </View>
-            <TextButton
+            <FormButton
               text='Register'
               bgColor={colors.surface.main}
               textColor={colors.surface.content}
