@@ -14,6 +14,7 @@ module.exports = function (api) {
             _scenes: './src/scenes',
             _theme: './src/theme',
             _utils: './src/utils',
+            _assets: './src/assets',
             _redux: './src/redux',
           },
         },

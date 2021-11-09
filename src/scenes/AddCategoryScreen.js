@@ -1,36 +1,56 @@
-import React, {useRef, useState} from 'react';
-import {v4 as uuid} from 'uuid';
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  TouchableOpacity,
-  TextInput,
-} from 'react-native';
+import React, {useRef, useState, useEffect} from 'react';
+import PropTypes from 'prop-types';
+import {StyleSheet, View} from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import AddIconModal from '_components/modals/AddIconModal';
 import TextButton from '_components/atoms/TextButton';
 import FormTextInput from '_components/atoms/FormTextInput';
 import IconSelect from '_components/atoms/IconSelect';
+// REDUX
+import {connect} from 'react-redux';
+import {addCat, updateCat, rollbackCompleted} from '_redux/actions/category';
 
-const AddIconScreen = ({route}) => {
-  const {cat, onSaveCategory} = route.params;
-  const [title, setTitle] = useState(cat.title);
-  const [icon, setIcon] = useState(cat.icon);
-
+const AddCategoryScreen = ({
+  route,
+  navigation,
+  catState,
+  addCat,
+  updateCat,
+  rollbackCompleted,
+}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
+  const [title, setTitle] = useState(
+    route.params.cat ? route.params.cat.title : '',
+  );
+  const [icon, setIcon] = useState(
+    route.params.cat ? route.params.cat.icon : '',
+  );
+
+  const {isLoading, isCompleted} = catState;
+
   const modalizeRef = useRef(null);
 
-  const onSave = (title, icon) => {
-    let newCat = {id: uuid(), title, icon};
-    onSaveCategory(newCat);
+  const onAdd = async () => {
+    await addCat({title, icon});
   };
 
+  const onUpdate = async id => {
+    await updateCat({id, title, icon});
+  };
+
+  useEffect(() => {
+    if (isCompleted) {
+      navigation.navigate('Categories');
+    }
+    return () => {
+      rollbackCompleted();
+    };
+  }, [isCompleted]);
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <FormTextInput
         value={title}
         onChangeText={val => setTitle(val)}
@@ -47,14 +67,17 @@ const AddIconScreen = ({route}) => {
         autoCapitalize='none'
       />
       <TextButton
-        text='Save Category'
+        text={route.params.cat ? 'Update Category' : 'Add Category'}
         bgColor={colors.primary.main}
         textColor={colors.primary.content}
-        onPress={() => onSave(title, icon)}
+        isAnimating={isLoading}
+        onPress={
+          route.params.cat ? () => onUpdate(route.params.cat.id) : () => onAdd()
+        }
       />
 
       <AddIconModal modalizeRef={modalizeRef} icon={icon} setIcon={setIcon} />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -65,26 +88,21 @@ const useStyles = colors =>
       alignItems: 'stretch',
       justifyContent: 'flex-start',
       backgroundColor: colors.background.main,
-    },
-    inputWrapper: {
-      padding: 15,
-    },
-    iconInputWrapper: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    input: {
-      padding: 12,
-      borderRadius: 10,
-      borderWidth: 1,
-      borderColor: colors.black.main,
-      color: colors.text.main,
-    },
-    iconWrapper: {
-      marginLeft: 15,
-      padding: 5,
+      paddingTop: 15,
     },
   });
 
-export default AddIconScreen;
+AddCategoryScreen.propTypes = {
+  catState: PropTypes.object.isRequired,
+  addCat: PropTypes.func.isRequired,
+  updateCat: PropTypes.func.isRequired,
+  rollbackCompleted: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = state => ({
+  catState: state.catState,
+});
+
+export default connect(mapStateToProps, {addCat, updateCat, rollbackCompleted})(
+  AddCategoryScreen,
+);

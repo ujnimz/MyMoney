@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import TextButton from '_components/atoms/TextButton';
@@ -18,13 +19,7 @@ import AddCurrencyModal from '_components/modals/AddCurrencyModal';
 import {connect} from 'react-redux';
 import {getUser, updateUser} from '_redux/actions/user';
 
-const ProfileScreen = ({
-  navigation,
-  getUser,
-  updateUser,
-  userState,
-  authState,
-}) => {
+const ProfileScreen = ({getUser, updateUser, userState, authState}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
@@ -53,7 +48,6 @@ const ProfileScreen = ({
 
   const handleUpdateUser = () => {
     updateUser({name, currency, image});
-    getUser();
   };
 
   return (
@@ -62,43 +56,49 @@ const ProfileScreen = ({
       style={styles.container}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.form}>
-          <FormTextInput
-            value={name}
-            onChangeText={val => setName(val)}
-            name='name'
-            placeholder='Name'
-            textContentType='name'
-            autoFocus={true}
-          />
-          <FormTextInput
-            value={image}
-            onChangeText={val => setImage(val)}
-            name='image'
-            placeholder='Image'
-          />
-          <TextSelect
-            modalizeRef={modalizeRef}
-            onChangeText={val => setCurrency(val)}
-            name='currency'
-            value={currency}
-            placeholder='Select Currency'
-          />
+        {isLoading ? (
+          <View style={styles.loading}>
+            <ActivityIndicator size='small' color={colors.text.main} />
+          </View>
+        ) : (
+          <View style={styles.form}>
+            <FormTextInput
+              value={name}
+              onChangeText={val => setName(val)}
+              name='name'
+              placeholder='Name'
+              textContentType='name'
+              autoFocus={true}
+            />
+            <FormTextInput
+              value={image}
+              onChangeText={val => setImage(val)}
+              name='image'
+              placeholder='Image'
+            />
+            <TextSelect
+              modalizeRef={modalizeRef}
+              onChangeText={val => setCurrency(val)}
+              name='currency'
+              value={currency}
+              placeholder='Select Currency'
+            />
 
-          <TextButton
-            text='Update'
-            bgColor={colors.primary.main}
-            textColor={colors.primary.content}
-            isAnimating={isLoading}
-            onPress={() => handleUpdateUser()}
-          />
+            <TextButton
+              text='Update'
+              bgColor={colors.primary.main}
+              textColor={colors.primary.content}
+              isAnimating={isLoading}
+              onPress={() => handleUpdateUser()}
+            />
 
-          <AddCurrencyModal
-            modalizeRef={modalizeRef}
-            currency={currency}
-            setCurrency={setCurrency}
-          />
-        </View>
+            <AddCurrencyModal
+              modalizeRef={modalizeRef}
+              currency={currency}
+              setCurrency={setCurrency}
+            />
+          </View>
+        )}
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
@@ -118,6 +118,11 @@ const useStyles = colors =>
     form: {
       flex: 1,
       paddingTop: 15,
+    },
+    loading: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   });
 

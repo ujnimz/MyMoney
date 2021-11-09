@@ -4,7 +4,6 @@ import {useTheme} from '_theme/ThemeContext';
 import CategoryItem from '_components/atoms/CategoryItem';
 
 const CategoriesList = ({onSetCategory, categoryList}) => {
-  console.log(categoryList);
   const {colors} = useTheme();
   const styles = useStyles(colors);
 

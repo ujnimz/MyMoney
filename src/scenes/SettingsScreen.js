@@ -6,6 +6,7 @@ import {useTheme} from '_theme/ThemeContext';
 import ColorCard from '_theme/ColorCard';
 import ThemeSwitch from '_components/atoms/ThemeSwitch';
 import TextButton from '_components/atoms/TextButton';
+const loaderImage = require('_assets/loading.gif');
 // REDUX
 import {connect} from 'react-redux';
 import {logoutUser} from '_redux/actions/auth';
@@ -38,7 +39,11 @@ const SettingsScreen = ({
               size={60}
             />
           ) : (
-            <Image style={styles.image} source={{uri: userData.image}} />
+            <Image
+              style={styles.image}
+              source={{uri: userData.image}}
+              loadingIndicatorSource={loaderImage}
+            />
           )}
         </View>
         <Text style={styles.username}>

@@ -1,84 +1,42 @@
 import React, {useState, useEffect} from 'react';
+import PropTypes from 'prop-types';
 import {Ionicons} from '@expo/vector-icons';
-import {StyleSheet, SafeAreaView, TouchableOpacity, Text} from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import CategoriesList from '_components/molecules/CategoriesList';
 import InfoText from '_components/atoms/InfoText';
+// REDUX
+import {connect} from 'react-redux';
+import {getCat} from '_redux/actions/category';
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'Food',
-    icon: 'fast-food',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Transportation',
-    icon: 'car-sport',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-14557dsdsd72',
-    title: 'Shopping',
-    icon: 'basket',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-14557dsdsds7',
-    title: 'Utility',
-    icon: 'bulb',
-  },
-  {
-    id: '58694a0f-3da5-471f-bd96-14557dsdsds7',
-    title: 'Rentals',
-    icon: 'business',
-  },
-  {
-    id: '58694a0f-3da1-981f-bd96-14557dsdsds7',
-    title: 'Banking',
-    icon: 'card',
-  },
-];
-
-const CategoryScreen = ({navigation}) => {
-  //const {newCat} = route.params;
-  const [catList, setCatList] = useState([]);
-  const [loading, setLoading] = useState(false);
-
+const CategoryScreen = ({navigation, getCat, catState}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
-  let initialState = {
-    title: '',
-    icon: '',
-  };
+  const {isLoading, catData} = catState;
 
   useEffect(() => {
-    setCatList(DATA);
-    return () => {
-      setCatList([]);
-    };
-  }, [loading]);
+    getCat();
+  }, []);
 
-  const onSaveCategory = newCat => {
-    setLoading(true);
-    DATA.push(newCat);
-    setLoading(false);
-    navigation.navigate('Categories');
-  };
-
-  const onAddCategory = cat => {
-    navigation.navigate('AddCategory', {cat, onSaveCategory});
+  const onAddCategory = () => {
+    navigation.navigate('AddCategory', {cat: undefined});
   };
 
   const onSetCategory = cat => {
-    navigation.navigate('AddCategory', {cat, onSaveCategory});
+    navigation.navigate('AddCategory', {cat});
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        onPress={() => onAddCategory(initialState)}
-        style={styles.button}
-      >
+      <TouchableOpacity onPress={() => onAddCategory()} style={styles.button}>
         <Text style={styles.buttonText}>Add New Category</Text>
         <Ionicons
           name='chevron-forward'
@@ -86,14 +44,12 @@ const CategoryScreen = ({navigation}) => {
           size={28}
         />
       </TouchableOpacity>
-      {loading ? (
-        <InfoText text='Loading..' />
-      ) : catList.length > 0 ? (
-        <CategoriesList
-          onSetCategory={onSetCategory}
-          key={catList.length}
-          categoryList={catList}
-        />
+      {isLoading ? (
+        <View style={styles.loading}>
+          <ActivityIndicator size='small' color={colors.text.main} />
+        </View>
+      ) : catData ? (
+        <CategoriesList onSetCategory={onSetCategory} categoryList={catData} />
       ) : (
         <InfoText text='Oops! There are no Categories.' />
       )}
@@ -131,6 +87,20 @@ const useStyles = colors =>
       fontWeight: '500',
       color: colors.text.main,
     },
+    loading: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   });
 
-export default CategoryScreen;
+CategoryScreen.propTypes = {
+  catState: PropTypes.object.isRequired,
+  getCat: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = state => ({
+  catState: state.catState,
+});
+
+export default connect(mapStateToProps, {getCat})(CategoryScreen);

@@ -11,8 +11,6 @@ import {
   db,
   doc,
   getDoc,
-  addDoc,
-  setDoc,
   updateDoc,
   serverTimestamp,
 } from '_firebase/fbConfig';
@@ -76,6 +74,7 @@ export const updateUser = userData => async dispatch => {
       image,
       updatedAt: serverTimestamp(),
     });
+    dispatch(getUser());
     Alert.alert('Success', 'Profile updated successfully.');
     return dispatch({
       type: UPDATE_USER_SUCCESS,

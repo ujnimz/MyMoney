@@ -12,9 +12,13 @@ import {
   getFirestore,
   doc,
   getDoc,
+  getDocs,
   addDoc,
   setDoc,
   updateDoc,
+  collection,
+  query,
+  where,
   serverTimestamp,
 } from 'firebase/firestore';
 
@@ -51,8 +55,12 @@ export {
   db,
   doc,
   getDoc,
+  getDocs,
   addDoc,
   setDoc,
   updateDoc,
+  collection,
+  query,
+  where,
   serverTimestamp,
 };
