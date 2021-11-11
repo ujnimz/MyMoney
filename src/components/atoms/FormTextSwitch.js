@@ -126,7 +126,7 @@ const useStyles = colors =>
 
 FormTextSwitch.propTypes = {
   options: PropTypes.array.isRequired,
-  active: PropTypes.string.isRequired,
+  selected: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   isLoading: PropTypes.bool,
 };

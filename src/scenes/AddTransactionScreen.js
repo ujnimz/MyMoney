@@ -1,26 +1,44 @@
-import React, {useRef, useEffect, useState} from 'react';
-import {StyleSheet, Text, View, Button} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View, Keyboard} from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import FormButton from '_components/atoms/FormButton';
 import FormTextInput from '_components/atoms/FormTextInput';
+import FormCategorySelect from '_components/atoms/FormCategorySelect';
+import FormDateSelect from '_components/atoms/FormDateSelect';
 
-const AddNewScreen = ({navigation}) => {
+const AddTransactionScreen = ({navigation, route}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
-
-  const modalizeRef = useRef(null);
+  const [category, setCategory] = useState(undefined);
+  const [date, setDate] = useState(new Date(1598051730000));
 
   useEffect(() => {
-    modalizeRef.current?.open();
+    if (route.params?.cat) {
+      setCategory(route.params.cat);
+    }
     return () => {
-      modalizeRef.current?.close();
+      setCategory(undefined);
     };
-  }, []);
+  }, [route.params?.cat]);
 
+  const handleCategorySelect = () => {
+    Keyboard.dismiss();
+    navigation.navigate('SelectCategory', {
+      select: true,
+    }); // go to Category screen to select a category
+  };
+
+  const handleDateSelect = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    //setShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+  // Add Data to Firebase
   const onAdd = () => {
+    console.log({amount, notes, category});
     return;
   };
 
@@ -40,10 +58,17 @@ const AddNewScreen = ({navigation}) => {
         name='notes'
         placeholder='Notes'
       />
-      <Button
-        onPress={() => navigation.navigate('CategoryList')}
-        title='Dismiss'
+      <FormCategorySelect
+        handleCategorySelect={handleCategorySelect}
+        category={category}
+        placeholder='Select Category'
       />
+      <FormDateSelect
+        handleDateSelect={handleDateSelect}
+        date={date}
+        placeholder='Select Date'
+      />
+
       <FormButton
         text='Add Transaction'
         bgColor={colors.primary.main}
@@ -69,4 +94,4 @@ const useStyles = colors =>
     },
   });
 
-export default AddNewScreen;
+export default AddTransactionScreen;

@@ -5,7 +5,6 @@ import {Ionicons, Octicons} from '@expo/vector-icons';
 import {Host} from 'react-native-portalize';
 import {useTheme} from '_theme/ThemeContext';
 import HomeStack from './HomeStack';
-import AddNewScreen from '_scenes/AddNewScreen';
 import TransactionsScreen from '_scenes/TransactionsScreen';
 import PlaceHolderScreen from '_scenes/PlaceHolderScreen';
 
@@ -69,7 +68,7 @@ const AppNavTabs = () => {
           listeners={({navigation}) => ({
             tabPress: e => {
               e.preventDefault();
-              navigation.navigate('AddNew');
+              navigation.navigate('AddTransaction');
             },
           })}
         />

@@ -60,6 +60,7 @@ export const getCat = () => async dispatch => {
       // doc.data() is never undefined for query doc snapshots
       const data = doc.data();
       data.id = doc.id;
+      delete data.uid;
       catData.push(data);
     });
 

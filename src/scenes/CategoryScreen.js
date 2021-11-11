@@ -16,7 +16,7 @@ import InfoText from '_components/atoms/InfoText';
 import {connect} from 'react-redux';
 import {getCat} from '_redux/actions/category';
 
-const CategoryScreen = ({navigation, getCat, catState}) => {
+const CategoryScreen = ({navigation, route, getCat, catState}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
@@ -27,11 +27,19 @@ const CategoryScreen = ({navigation, getCat, catState}) => {
   }, []);
 
   const onAddCategory = () => {
-    navigation.navigate('AddCategory', {cat: undefined});
+    navigation.navigate('AddCategory', {
+      cat: undefined,
+      select: route.params?.select,
+    });
   };
 
-  const onSetCategory = cat => {
-    navigation.navigate('AddCategory', {cat});
+  const onEditCategory = cat => {
+    navigation.navigate('EditCategory', {cat});
+  };
+
+  const onSelectCategory = cat => {
+    //navigation.goBack();
+    navigation.navigate('AddNew', {cat});
   };
 
   return (
@@ -49,7 +57,12 @@ const CategoryScreen = ({navigation, getCat, catState}) => {
           <ActivityIndicator size='small' color={colors.text.main} />
         </View>
       ) : catData ? (
-        <CategoriesList onSetCategory={onSetCategory} categoryList={catData} />
+        <CategoriesList
+          onSetCategory={
+            route.params?.select ? onSelectCategory : onEditCategory
+          }
+          categoryList={catData}
+        />
       ) : (
         <InfoText text='Oops! There are no Categories.' />
       )}

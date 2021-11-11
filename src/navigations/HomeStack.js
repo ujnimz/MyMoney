@@ -61,22 +61,6 @@ const HomeStack = () => {
         }}
       />
       <Stack.Screen
-        name='AddCategory'
-        component={AddCategoryScreen}
-        options={{
-          title: 'Add/Edit Category',
-          headerLeft: ({canGoBack, onPress}) =>
-            canGoBack && (
-              <Ionicons
-                name='chevron-back'
-                onPress={onPress}
-                color={colors.secondary.content}
-                size={40}
-              />
-            ),
-        }}
-      />
-      <Stack.Screen
         name='Profile'
         component={ProfileScreen}
         options={{

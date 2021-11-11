@@ -30,13 +30,13 @@ const AddCategoryScreen = ({
   const styles = useStyles(colors);
 
   const [title, setTitle] = useState(
-    route.params.cat ? route.params.cat.title : '',
+    route.params?.cat ? route.params.cat.title : '',
   );
   const [icon, setIcon] = useState(
-    route.params.cat ? route.params.cat.icon : '',
+    route.params?.cat ? route.params.cat.icon : '',
   );
   const [type, setType] = useState(
-    route.params.cat ? route.params.cat.type : 'debit',
+    route.params?.cat ? route.params.cat.type : 'debit',
   );
 
   const {isLoading, isCompleted} = catState;
@@ -74,7 +74,9 @@ const AddCategoryScreen = ({
 
   useEffect(() => {
     if (isCompleted) {
-      navigation.navigate('Categories');
+      route.params?.select
+        ? navigation.navigate('SelectCategory', {select: true}) // if comes from Select Category screen, go back
+        : navigation.navigate('Categories'); // if comes from Category screen, go back
     }
     return () => {
       rollbackCompleted();
@@ -114,13 +116,13 @@ const AddCategoryScreen = ({
           textColor={colors.primary.content}
           isAnimating={isLoading}
           onPress={
-            route.params.cat
+            route.params?.cat
               ? () => onUpdate(route.params.cat.id)
               : () => onAdd()
           }
         />
 
-        {route.params.cat ? (
+        {route.params?.cat ? (
           <FormIconButton
             icon='trash'
             bgColor={colors.primary.main}

@@ -3,8 +3,9 @@ import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '_theme/ThemeContext';
 import AppNavTabs from '_navigations/AppNavTabs';
-import AddNewScreen from '_scenes/AddNewScreen';
-import CategoryListScreen from '_scenes/CategoryListScreen';
+import AddTransactionScreen from '_scenes/AddTransactionScreen';
+import AddCategoryScreen from '_scenes/AddCategoryScreen';
+import CategoryScreen from '_scenes/CategoryScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,8 +27,8 @@ const RootStack = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name='AddNew'
-        component={AddNewScreen}
+        name='AddTransaction'
+        component={AddTransactionScreen}
         options={{
           headerTitle: 'Add Transaction',
           headerLeft: ({canGoBack, onPress}) =>
@@ -43,8 +44,42 @@ const RootStack = () => {
         }}
       />
       <Stack.Screen
-        name='CategoryList'
-        component={CategoryListScreen}
+        name='AddCategory'
+        component={AddCategoryScreen}
+        options={{
+          headerTitle: 'Add Category',
+          headerLeft: ({canGoBack, onPress}) =>
+            canGoBack && (
+              <Ionicons
+                name='chevron-back'
+                onPress={onPress}
+                color={colors.secondary.content}
+                size={40}
+              />
+            ),
+          ...TransitionPresets.ModalTransition,
+        }}
+      />
+      <Stack.Screen
+        name='EditCategory'
+        component={AddCategoryScreen}
+        options={{
+          headerTitle: 'Edit Category',
+          headerLeft: ({canGoBack, onPress}) =>
+            canGoBack && (
+              <Ionicons
+                name='chevron-back'
+                onPress={onPress}
+                color={colors.secondary.content}
+                size={40}
+              />
+            ),
+          ...TransitionPresets.ModalTransition,
+        }}
+      />
+      <Stack.Screen
+        name='SelectCategory'
+        component={CategoryScreen}
         options={{
           headerTitle: 'Select Category',
           headerLeft: ({canGoBack, onPress}) =>
