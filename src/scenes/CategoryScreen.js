@@ -39,7 +39,7 @@ const CategoryScreen = ({navigation, route, getCat, catState}) => {
 
   const onSelectCategory = cat => {
     //navigation.goBack();
-    navigation.navigate('AddNew', {cat});
+    navigation.navigate('AddTransaction', {cat});
   };
 
   return (

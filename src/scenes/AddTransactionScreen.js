@@ -1,19 +1,39 @@
 import React, {useEffect, useState} from 'react';
+import PropTypes from 'prop-types';
 import {StyleSheet, Text, View, Keyboard} from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import FormButton from '_components/atoms/FormButton';
 import FormTextInput from '_components/atoms/FormTextInput';
 import FormCategorySelect from '_components/atoms/FormCategorySelect';
 import FormDateSelect from '_components/atoms/FormDateSelect';
+// REDUX
+import {connect} from 'react-redux';
+import {addTransaction, rollbackCompleted} from '_redux/actions/transactions';
 
-const AddTransactionScreen = ({navigation, route}) => {
+const AddTransactionScreen = ({
+  navigation,
+  route,
+  addTransaction,
+  transactionsState,
+}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
   const [category, setCategory] = useState(undefined);
-  const [date, setDate] = useState(new Date(1598051730000));
+  const [date, setDate] = useState(undefined);
+
+  const {isLoading, isCompleted} = transactionsState;
+
+  useEffect(() => {
+    if (isCompleted) {
+      navigation.goBack(); // if comes from Category screen, go back
+    }
+    return () => {
+      rollbackCompleted();
+    };
+  }, [isCompleted]);
 
   useEffect(() => {
     if (route.params?.cat) {
@@ -31,15 +51,10 @@ const AddTransactionScreen = ({navigation, route}) => {
     }); // go to Category screen to select a category
   };
 
-  const handleDateSelect = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    //setShow(Platform.OS === 'ios');
-    setDate(currentDate);
-  };
   // Add Data to Firebase
   const onAdd = () => {
-    console.log({amount, notes, category});
-    return;
+    //console.log({amount, notes, category, date});
+    return addTransaction({amount, notes, category, date});
   };
 
   return (
@@ -63,11 +78,7 @@ const AddTransactionScreen = ({navigation, route}) => {
         category={category}
         placeholder='Select Category'
       />
-      <FormDateSelect
-        handleDateSelect={handleDateSelect}
-        date={date}
-        placeholder='Select Date'
-      />
+      <FormDateSelect setDate={setDate} date={date} placeholder='Select Date' />
 
       <FormButton
         text='Add Transaction'
@@ -94,4 +105,16 @@ const useStyles = colors =>
     },
   });
 
-export default AddTransactionScreen;
+AddTransactionScreen.propTypes = {
+  transactionsState: PropTypes.object.isRequired,
+  addTransaction: PropTypes.func.isRequired,
+  rollbackCompleted: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = state => ({
+  transactionsState: state.transactionsState,
+});
+
+export default connect(mapStateToProps, {addTransaction, rollbackCompleted})(
+  AddTransactionScreen,
+);

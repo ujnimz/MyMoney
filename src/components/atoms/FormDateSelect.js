@@ -6,21 +6,28 @@ import {
   TouchableOpacity,
   Keyboard,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '_theme/ThemeContext';
 
-const FormDateSelect = ({handleDateSelect, date, ...rest}) => {
-  console.log(date);
-  const {colors} = useTheme();
+const FormDateSelect = ({setDate, date, ...rest}) => {
+  const {colors, isDark} = useTheme();
   const styles = useStyles(colors);
 
-  const [show, setShow] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  const onDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(false);
-    handleDateSelect(currentDate);
+  const showDatePicker = () => {
+    Keyboard.dismiss();
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = date => {
+    setDate(date);
+    hideDatePicker();
   };
 
   return (
@@ -29,7 +36,7 @@ const FormDateSelect = ({handleDateSelect, date, ...rest}) => {
         <View style={{flex: 1}}>
           <TextInput
             name='icon'
-            value={String(date)}
+            value={date ? date.toDateString() : ''}
             style={styles.input}
             placeholderTextColor={colors.text.focus}
             editable={false}
@@ -39,21 +46,19 @@ const FormDateSelect = ({handleDateSelect, date, ...rest}) => {
 
         <TouchableOpacity
           style={styles.iconWrapper}
-          onPress={() => setShow(true)}
+          onPress={() => showDatePicker()}
         >
-          <Ionicons name='add-circle' color={colors.primary.main} size={32} />
+          <Ionicons name='calendar' color={colors.primary.main} size={32} />
         </TouchableOpacity>
       </View>
-      {show && (
-        <DateTimePicker
-          testID='dateTimePicker'
-          hideText={true}
-          value={date}
-          is24Hour={true}
-          display='default'
-          onChange={onDateChange}
-        />
-      )}
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode='date'
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
+        isDarkModeEnabled={isDark}
+        themeVariant={isDark ? 'dark' : 'light'}
+      />
     </View>
   );
 };
@@ -79,6 +84,11 @@ const useStyles = colors =>
     },
     iconWrapper: {
       marginLeft: 10,
+      padding: 5,
+    },
+    datePicker: {
+      color: colors.text.main,
+      //backgroundColor: 'white',
       padding: 5,
     },
   });
