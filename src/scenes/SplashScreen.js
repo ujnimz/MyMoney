@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import AppNavTabs from '_navigations/AppNavTabs';
 import AuthNavStack from '_navigations/AuthNavStack';
+import RootStack from '_navigations/RootStack';
 import LoadingScreen from '_scenes/LoadingScreen';
 // REDUX
 import {connect} from 'react-redux';
@@ -22,7 +23,7 @@ const SplashScreen = ({authState, authStatus}) => {
     return <AuthNavStack />;
   }
 
-  return <AppNavTabs />;
+  return <RootStack />;
 };
 
 SplashScreen.propTypes = {

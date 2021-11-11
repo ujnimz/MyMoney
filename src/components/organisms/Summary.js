@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import {Ionicons} from '@expo/vector-icons';
 import {summaryHeight} from '_utils/useDimensions';
 import {useTheme} from '_theme/ThemeContext';
 import PieChart from '_components/atoms/PieChart';
@@ -10,8 +11,18 @@ const Summary = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.centerSection}>
+      <View style={styles.monthSection}>
+        <Ionicons
+          name='caret-back-circle-outline'
+          color={colors.black.content}
+          size={36}
+        />
         <Text style={styles.monthText}>October</Text>
+        <Ionicons
+          name='caret-forward-circle-outline'
+          color={colors.black.content}
+          size={36}
+        />
       </View>
 
       <View style={styles.centerSection}>
@@ -33,6 +44,11 @@ const useStyles = colors =>
       height: summaryHeight,
       justifyContent: 'flex-start',
       padding: 15,
+    },
+    monthSection: {
+      flexDirection: 'row',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
     },
     centerSection: {
       justifyContent: 'center',

@@ -49,10 +49,12 @@ const useStyles = colors =>
       fontWeight: '700',
       marginBottom: 15,
       marginTop: 15,
+      color: colors.text.main,
     },
     text: {
       fontSize: 14,
       marginBottom: 15,
+      color: colors.text.main,
     },
   });
 

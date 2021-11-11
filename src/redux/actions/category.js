@@ -83,9 +83,11 @@ export const getCat = () => async dispatch => {
 
 // ADD CATEGORY
 export const addCat = newCat => async dispatch => {
-  const {title, icon} = newCat;
+  const {title, icon, type} = newCat;
   if (title === '') return Alert.alert('Invalid!', 'Please add category name.');
   if (icon === '') return Alert.alert('Invalid!', 'Please choose an icon.');
+  if (type === '')
+    return Alert.alert('Invalid!', 'Please choose Debit or Credit.');
   dispatch(setCatLoading());
   try {
     const user = auth.currentUser;
@@ -113,14 +115,14 @@ export const addCat = newCat => async dispatch => {
 
 // UPDATE CATEGORY
 export const updateCat = newCat => async dispatch => {
-  const {id, title, icon} = newCat;
+  const {id, title, icon, type} = newCat;
   if (title === '') return Alert.alert('Invalid!', 'Please add category name.');
   if (icon === '') return Alert.alert('Invalid!', 'Please choose an icon.');
   dispatch(setCatLoading());
   try {
     const user = auth.currentUser;
 
-    await setDoc(doc(db, 'categories', id), {uid: user.uid, title, icon});
+    await setDoc(doc(db, 'categories', id), {uid: user.uid, title, icon, type});
     dispatch(getCat());
     return dispatch({
       type: UPDATE_CAT_SUCCESS,

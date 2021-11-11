@@ -7,6 +7,7 @@ import FormButton from '_components/atoms/FormButton';
 import FormIconButton from '_components/atoms/FormIconButton';
 import FormTextInput from '_components/atoms/FormTextInput';
 import FormIconSelect from '_components/atoms/FormIconSelect';
+import FormTextSwitch from '_components/atoms/FormTextSwitch';
 // REDUX
 import {connect} from 'react-redux';
 import {
@@ -34,17 +35,20 @@ const AddCategoryScreen = ({
   const [icon, setIcon] = useState(
     route.params.cat ? route.params.cat.icon : '',
   );
+  const [type, setType] = useState(
+    route.params.cat ? route.params.cat.type : 'debit',
+  );
 
   const {isLoading, isCompleted} = catState;
 
   const modalizeRef = useRef(null);
 
   const onAdd = async () => {
-    return await addCat({title, icon});
+    return await addCat({title, icon, type});
   };
 
   const onUpdate = async id => {
-    return await updateCat({id, title, icon});
+    return await updateCat({id, title, icon, type});
   };
 
   const onDelete = id => {
@@ -85,6 +89,14 @@ const AddCategoryScreen = ({
         name='title'
         placeholder='Category Name'
         autoFocus={true}
+      />
+      <FormTextSwitch
+        options={[
+          {option: 'debit', label: 'Debit'},
+          {option: 'credit', label: 'Credit'},
+        ]}
+        selected={type}
+        onChange={val => setType(val)}
       />
       <FormIconSelect
         modalizeRef={modalizeRef}

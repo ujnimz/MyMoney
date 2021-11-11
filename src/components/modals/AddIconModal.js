@@ -86,6 +86,30 @@ const DATA = [
     icon: 'paw',
     name: 'paw',
   },
+  {
+    icon: 'medkit',
+    name: 'Medkit',
+  },
+  {
+    icon: 'heart',
+    name: 'heart',
+  },
+  {
+    icon: 'musical-notes',
+    name: 'musical-notes',
+  },
+  {
+    icon: 'pizza',
+    name: 'pizza',
+  },
+  {
+    icon: 'school',
+    name: 'school',
+  },
+  {
+    icon: 'shirt',
+    name: 'shirt',
+  },
 ];
 
 const AddCategoryModal = ({modalizeRef, icon, setIcon}) => {

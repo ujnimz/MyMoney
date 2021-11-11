@@ -26,6 +26,7 @@ const FormIconSelect = ({modalizeRef, icon, ...rest}) => {
             name='icon'
             style={styles.input}
             placeholderTextColor={colors.text.focus}
+            editable={false}
             {...rest}
           />
         </View>
@@ -47,7 +48,9 @@ const FormIconSelect = ({modalizeRef, icon, ...rest}) => {
 const useStyles = colors =>
   StyleSheet.create({
     container: {
-      padding: 15,
+      paddingLeft: 15,
+      paddingRight: 15,
+      marginBottom: 20,
     },
     iconInputWrapper: {
       flexDirection: 'row',

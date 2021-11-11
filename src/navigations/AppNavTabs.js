@@ -1,12 +1,13 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {View} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 import {Ionicons, Octicons} from '@expo/vector-icons';
 import {Host} from 'react-native-portalize';
 import {useTheme} from '_theme/ThemeContext';
 import HomeStack from './HomeStack';
-import PaletteScreen from '_scenes/PaletteScreen';
+import AddNewScreen from '_scenes/AddNewScreen';
 import TransactionsScreen from '_scenes/TransactionsScreen';
+import PlaceHolderScreen from '_scenes/PlaceHolderScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,8 +43,8 @@ const AppNavTabs = () => {
           }}
         />
         <Tab.Screen
-          name='Colors'
-          component={PaletteScreen}
+          name='PlaceHolderScreen'
+          component={PlaceHolderScreen}
           options={{
             tabBarLabel: '',
             tabBarIcon: () => (
@@ -65,6 +66,12 @@ const AppNavTabs = () => {
               </View>
             ),
           }}
+          listeners={({navigation}) => ({
+            tabPress: e => {
+              e.preventDefault();
+              navigation.navigate('AddNew');
+            },
+          })}
         />
         <Tab.Screen
           name='Transactions'

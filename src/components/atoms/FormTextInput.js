@@ -22,7 +22,7 @@ const useStyles = colors =>
     container: {
       paddingLeft: 15,
       paddingRight: 15,
-      paddingBottom: 10,
+      paddingBottom: 20,
     },
     input: {
       padding: 12,
