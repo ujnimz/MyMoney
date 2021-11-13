@@ -21,6 +21,7 @@ import {
   query,
   where,
   serverTimestamp,
+  orderBy,
 } from 'firebase/firestore';
 
 // Optionally import the services that you want to use
@@ -65,4 +66,5 @@ export {
   query,
   where,
   serverTimestamp,
+  orderBy,
 };

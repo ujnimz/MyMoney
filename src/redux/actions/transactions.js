@@ -25,6 +25,7 @@ import {
   query,
   where,
   serverTimestamp,
+  orderBy,
 } from '_firebase/fbConfig';
 
 import {Alert} from 'react-native';
@@ -63,12 +64,13 @@ export const getTransactions = () => async dispatch => {
       delete data.uid;
       catData.push(data);
     });
-
+    //console.log(catData);
     return dispatch({
       type: GET_TRANSACTIONS_SUCCESS,
       payload: catData,
     });
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
         Alert.alert('Invalid', 'Please check your email address again.');
@@ -84,20 +86,20 @@ export const getTransactions = () => async dispatch => {
 
 // ADD TRANSACTIONEGORY
 export const addTransaction = newTransaction => async dispatch => {
-  const {amount, notes, category, date} = newTransaction;
+  const {amount, notes, category, timestamp} = newTransaction;
   if (amount === '') return Alert.alert('Invalid!', 'Please add the amount.');
   if (notes === '') return Alert.alert('Invalid!', 'Please add a note.');
-  if (category === '')
-    return Alert.alert('Invalid!', 'Please choose a category');
-  if (date === '') return Alert.alert('Invalid!', 'Please choose a date.');
+  if (!category) return Alert.alert('Invalid!', 'Please choose a category');
+  if (!timestamp) return Alert.alert('Invalid!', 'Please choose a date.');
   dispatch(setTransactionLoading());
   try {
     const user = auth.currentUser;
     newTransaction.uid = user.uid;
-
+    newTransaction.date = serverTimestamp.fromDate(new Date());
+    console.log(newTransaction);
     await addDoc(collection(db, 'transactions'), newTransaction);
 
-    //dispatch(getTransaction());
+    dispatch(getTransactions());
     return dispatch({
       type: ADD_TRANSACTION_SUCCESS,
     });
@@ -130,7 +132,7 @@ export const updateTransaction = newTransaction => async dispatch => {
       icon,
       type,
     });
-    dispatch(getTransaction());
+    dispatch(getTransactions());
     return dispatch({
       type: UPDATE_TRANSACTION_SUCCESS,
     });
@@ -150,7 +152,7 @@ export const updateTransaction = newTransaction => async dispatch => {
 
 // DELETE TRANSACTIONEGORY
 export const deleteTransaction = catId => async dispatch => {
-  console.log(catId);
+  //console.log(catId);
   dispatch(setTransactionLoading());
   try {
     await deleteDoc(doc(db, 'transactions', catId));

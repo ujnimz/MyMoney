@@ -7,21 +7,27 @@ const TransactionItem = ({item}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
+  const {amount, notes, category} = item;
+
   return (
     <View style={styles.container}>
       <View style={styles.details}>
         <View style={styles.icon}>
-          <Ionicons name={item.icon} color={colors.primary.main} size={24} />
+          <Ionicons
+            name={category.icon}
+            color={colors.primary.main}
+            size={24}
+          />
         </View>
 
         <View>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.category}>{item.category}</Text>
+          <Text style={styles.title}>{notes}</Text>
+          <Text style={styles.category}>{category.title}</Text>
         </View>
       </View>
 
       <View>
-        <Text style={styles.amount}>{item.amount}</Text>
+        <Text style={styles.amount}>{amount}</Text>
       </View>
     </View>
   );

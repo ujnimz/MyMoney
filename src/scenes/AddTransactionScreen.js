@@ -14,6 +14,7 @@ const AddTransactionScreen = ({
   navigation,
   route,
   addTransaction,
+  rollbackCompleted,
   transactionsState,
 }) => {
   const {colors} = useTheme();
@@ -23,12 +24,13 @@ const AddTransactionScreen = ({
   const [notes, setNotes] = useState('');
   const [category, setCategory] = useState(undefined);
   const [date, setDate] = useState(undefined);
+  const [timestamp, setTimestamp] = useState(undefined);
 
   const {isLoading, isCompleted} = transactionsState;
 
   useEffect(() => {
     if (isCompleted) {
-      navigation.goBack(); // if comes from Category screen, go back
+      navigation.navigate('AppNavTabs'); // if comes from Category screen, go back
     }
     return () => {
       rollbackCompleted();
@@ -46,15 +48,14 @@ const AddTransactionScreen = ({
 
   const handleCategorySelect = () => {
     Keyboard.dismiss();
-    navigation.navigate('SelectCategory', {
+    return navigation.navigate('SelectCategory', {
       select: true,
     }); // go to Category screen to select a category
   };
 
   // Add Data to Firebase
-  const onAdd = () => {
-    //console.log({amount, notes, category, date});
-    return addTransaction({amount, notes, category, date});
+  const onAdd = async () => {
+    return await addTransaction({amount, notes, category, timestamp});
   };
 
   return (
@@ -78,13 +79,18 @@ const AddTransactionScreen = ({
         category={category}
         placeholder='Select Category'
       />
-      <FormDateSelect setDate={setDate} date={date} placeholder='Select Date' />
+      <FormDateSelect
+        setDate={setDate}
+        setTimestamp={setTimestamp}
+        date={date}
+        placeholder='Select Date'
+      />
 
       <FormButton
         text='Add Transaction'
         bgColor={colors.primary.main}
         textColor={colors.primary.content}
-        //isAnimating={isLoading}
+        isAnimating={isLoading}
         onPress={() => onAdd()}
       />
     </View>
