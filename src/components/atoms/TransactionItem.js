@@ -9,6 +9,10 @@ const TransactionItem = ({item}) => {
 
   const {amount, notes, category} = item;
 
+  const convertToCurrency = amount => {
+    return Number(amount).toFixed(3).toLocaleString();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.details}>
@@ -27,7 +31,7 @@ const TransactionItem = ({item}) => {
       </View>
 
       <View>
-        <Text style={styles.amount}>{amount}</Text>
+        <Text style={styles.amount}>{convertToCurrency(amount)}</Text>
       </View>
     </View>
   );
@@ -39,7 +43,7 @@ const useStyles = colors =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: 15,
+      padding: 10,
     },
     details: {
       flexDirection: 'row',

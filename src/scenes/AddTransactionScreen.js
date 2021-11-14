@@ -24,7 +24,6 @@ const AddTransactionScreen = ({
   const [notes, setNotes] = useState('');
   const [category, setCategory] = useState(undefined);
   const [date, setDate] = useState(undefined);
-  const [timestamp, setTimestamp] = useState(undefined);
 
   const {isLoading, isCompleted} = transactionsState;
 
@@ -53,9 +52,25 @@ const AddTransactionScreen = ({
     }); // go to Category screen to select a category
   };
 
+  //Convert the amount to number format before store in database
+  const convertToNumber = amount => {
+    return Number(amount.replace(/[^0-9.-]+/g, ''));
+  };
+
+  const getMonthYear = date => {
+    return `${date.getMonth()}-${date.getFullYear()}`;
+  };
+
   // Add Data to Firebase
   const onAdd = async () => {
-    return await addTransaction({amount, notes, category, timestamp});
+    return await addTransaction({
+      amount: convertToNumber(amount),
+      notes,
+      category,
+      date,
+      month: date.getMonth(),
+      year: date.getFullYear(),
+    });
   };
 
   return (
@@ -79,12 +94,7 @@ const AddTransactionScreen = ({
         category={category}
         placeholder='Select Category'
       />
-      <FormDateSelect
-        setDate={setDate}
-        setTimestamp={setTimestamp}
-        date={date}
-        placeholder='Select Date'
-      />
+      <FormDateSelect setDate={setDate} date={date} placeholder='Select Date' />
 
       <FormButton
         text='Add Transaction'

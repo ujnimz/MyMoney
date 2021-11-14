@@ -3,6 +3,8 @@ import {
   TRANSACTION_COMPLETED,
   GET_TRANSACTIONS_SUCCESS,
   GET_TRANSACTIONS_FAIL,
+  GET_TRANSACTIONS_BYMONTH_SUCCESS,
+  GET_TRANSACTIONS_BYMONTH_FAIL,
   ADD_TRANSACTION_SUCCESS,
   ADD_TRANSACTION_FAIL,
   UPDATE_TRANSACTION_SUCCESS,
@@ -37,6 +39,18 @@ const transactionsReducer = (state = initialState, action) => {
         isLoading: false,
       };
     case GET_TRANSACTIONS_FAIL:
+      return {
+        ...state,
+        transactionData: null,
+        isLoading: false,
+      };
+    case GET_TRANSACTIONS_BYMONTH_SUCCESS:
+      return {
+        ...state,
+        transactionData: payload,
+        isLoading: false,
+      };
+    case GET_TRANSACTIONS_BYMONTH_FAIL:
       return {
         ...state,
         transactionData: null,

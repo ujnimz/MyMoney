@@ -10,7 +10,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '_theme/ThemeContext';
 
-const FormDateSelect = ({setDate, setTimestamp, date, ...rest}) => {
+const FormDateSelect = ({setDate, date, ...rest}) => {
   const {colors, isDark} = useTheme();
   const styles = useStyles(colors);
 
@@ -27,8 +27,6 @@ const FormDateSelect = ({setDate, setTimestamp, date, ...rest}) => {
 
   const handleConfirm = date => {
     setDate(date);
-    setTimestamp(new Date(date.toDateString()).getTime() / 1000);
-    //console.log(date.toDateString());
     hideDatePicker();
   };
 

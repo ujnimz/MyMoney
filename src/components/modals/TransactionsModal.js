@@ -72,7 +72,7 @@ const DATA = [
   },
 ];
 
-const TransactionsModal = () => {
+const TransactionsModal = ({transactionData}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
@@ -91,7 +91,7 @@ const TransactionsModal = () => {
       alwaysOpen={modalHeight}
       handlePosition={'inside'}
       flatListProps={{
-        data: DATA,
+        data: transactionData,
         renderItem: renderItem,
         keyExtractor: item => item.id,
         showsVerticalScrollIndicator: false,

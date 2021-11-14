@@ -20,7 +20,7 @@ import {
   collection,
   query,
   where,
-  serverTimestamp,
+  Timestamp,
   orderBy,
 } from 'firebase/firestore';
 
@@ -65,6 +65,6 @@ export {
   collection,
   query,
   where,
-  serverTimestamp,
+  Timestamp,
   orderBy,
 };
