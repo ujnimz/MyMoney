@@ -10,7 +10,6 @@ const Logo = ({color}) => {
   return (
     <View style={styles.container}>
       <Ionicons name='wallet' color={color} size={30} />
-
       <Text style={[styles.logoText, {color: color}]}>MyMoney</Text>
     </View>
   );
