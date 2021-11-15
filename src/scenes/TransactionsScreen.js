@@ -9,7 +9,13 @@ import {
 } from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '_theme/ThemeContext';
-import {getMonth, getYear, getThisMonthIndex} from '_utils/useDateTime';
+import {
+  getMonthName,
+  getThisYear,
+  getThisMonthIndex,
+  getNextMonthYear,
+  getPrevMonthYear,
+} from '_utils/useDateTime';
 import LoadingIcon from '_components/atoms/LoadingIcon';
 import Message from '_components/atoms/Message';
 import TransactionsList from '_components/molecules/TransactionsList';
@@ -24,30 +30,47 @@ const TransactionsScreen = ({getTransactionsByDate, transactionsState}) => {
   const {isLoading, transactionData} = transactionsState;
 
   const [monthIndex, setMonthIndex] = useState(getThisMonthIndex());
+  const [year, setYear] = useState(getThisYear());
+  const [disable, setDisable] = useState(true);
 
+  // get current month's transactions
   useEffect(() => {
-    getTransactionsByDate(monthIndex, getYear());
+    getTransactionsByDate(monthIndex, year);
+    // set next button disabled if this is the current month and year
+    monthIndex === getThisMonthIndex() && year === getThisYear()
+      ? setDisable(true)
+      : setDisable(false);
   }, [monthIndex]);
 
-  const nextMonth = () => {
-    if (monthIndex === 11) {
-      setMonthIndex(0);
-    } else {
-      setMonthIndex(monthIndex + 1);
-    }
+  // change month index and year to next month
+  const onNextMonth = () => {
+    const next = getNextMonthYear(monthIndex, year);
+    setMonthIndex(next.monthIndex);
+    setYear(next.year);
   };
-  const prevMonth = () => {
-    if (monthIndex === 0) {
-      setMonthIndex(11);
-    } else {
-      setMonthIndex(monthIndex - 1);
-    }
+
+  // change month index and year to previous month
+  const onPrevMonth = () => {
+    const prev = getPrevMonthYear(monthIndex, year);
+    setMonthIndex(prev.monthIndex);
+    setYear(prev.year);
+  };
+
+  // change month index and year to current month and year
+  const onCurrMonthYear = () => {
+    setMonthIndex(getThisMonthIndex());
+    setYear(getThisYear());
+  };
+
+  // return month and year title
+  const getTitle = () => {
+    return `${getMonthName(monthIndex)} ${year}`;
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => prevMonth()}>
+        <TouchableOpacity onPress={() => onPrevMonth()}>
           <Ionicons
             name='chevron-back-circle-outline'
             color={colors.text.main}
@@ -55,15 +78,16 @@ const TransactionsScreen = ({getTransactionsByDate, transactionsState}) => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setMonthIndex(getThisMonthIndex())}>
-          <Text style={styles.title}>{getMonth(monthIndex)}</Text>
+        <TouchableOpacity onPress={() => onCurrMonthYear()}>
+          <Text style={styles.title}>{getTitle()}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => nextMonth()}>
+        <TouchableOpacity onPress={() => onNextMonth()} disabled={disable}>
           <Ionicons
             name='chevron-forward-circle-outline'
             color={colors.text.main}
             size={36}
+            style={disable ? {opacity: 0.4} : ''}
           />
         </TouchableOpacity>
       </View>

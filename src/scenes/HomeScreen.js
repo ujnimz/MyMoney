@@ -1,13 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {useTheme} from '_theme/ThemeContext';
-import {getMonth, getYear, getThisMonthIndex} from '_utils/useDateTime';
+import {
+  getMonthName,
+  getThisYear,
+  getThisMonthIndex,
+  getNextMonthYear,
+  getPrevMonthYear,
+} from '_utils/useDateTime';
 import {StyleSheet, View} from 'react-native';
 import GradientBackground from '_theme/GradientBackground';
 import Summary from '_components/organisms/Summary';
 import Header from '_components/organisms/Header';
-import LoadingIcon from '_components/atoms/LoadingIcon';
-import Message from '_components/atoms/Message';
 import TransactionsModal from '_components/modals/TransactionsModal';
 
 // REDUX
@@ -22,24 +26,41 @@ const HomeScreen = ({navigation, getTransactionsByDate, transactionsState}) => {
   const {isLoading, transactionData} = transactionsState;
 
   const [monthIndex, setMonthIndex] = useState(getThisMonthIndex());
+  const [year, setYear] = useState(getThisYear());
+  const [disable, setDisable] = useState(true);
 
+  // get current month's transactions
   useEffect(() => {
-    getTransactionsByDate(monthIndex, getYear());
+    getTransactionsByDate(monthIndex, year);
+    // set next button disabled if this is the current month and year
+    monthIndex === getThisMonthIndex() && year === getThisYear()
+      ? setDisable(true)
+      : setDisable(false);
   }, [monthIndex]);
 
-  const nextMonth = () => {
-    if (monthIndex === 11) {
-      setMonthIndex(0);
-    } else {
-      setMonthIndex(monthIndex + 1);
-    }
+  // change month index and year to next month
+  const onNextMonth = () => {
+    const next = getNextMonthYear(monthIndex, year);
+    setMonthIndex(next.monthIndex);
+    setYear(next.year);
   };
-  const prevMonth = () => {
-    if (monthIndex === 0) {
-      setMonthIndex(11);
-    } else {
-      setMonthIndex(monthIndex - 1);
-    }
+
+  // change month index and year to previous month
+  const onPrevMonth = () => {
+    const prev = getPrevMonthYear(monthIndex, year);
+    setMonthIndex(prev.monthIndex);
+    setYear(prev.year);
+  };
+
+  // change month index and year to current month and year
+  const onCurrMonthYear = () => {
+    setMonthIndex(getThisMonthIndex());
+    setYear(getThisYear());
+  };
+
+  // return month and year title
+  const getTitle = () => {
+    return `${getMonthName(monthIndex)} ${year}`;
   };
 
   return (
@@ -52,15 +73,18 @@ const HomeScreen = ({navigation, getTransactionsByDate, transactionsState}) => {
     >
       <View style={styles.container}>
         <Header navigation={navigation} />
-        <Summary />
+        <Summary
+          onNextMonth={onNextMonth}
+          onCurrMonthYear={onCurrMonthYear}
+          onPrevMonth={onPrevMonth}
+          title={getTitle()}
+          disabled={disable}
+        />
 
-        {isLoading || !transactionData ? (
-          <LoadingIcon />
-        ) : transactionData.length < 1 ? (
-          <Message message='No transactions found. Please add.' />
-        ) : (
-          <TransactionsModal transactionData={transactionData} />
-        )}
+        <TransactionsModal
+          isLoading={isLoading}
+          transactionData={transactionData}
+        />
       </View>
     </GradientBackground>
   );

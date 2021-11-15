@@ -115,7 +115,7 @@ export const getTransactionsByDate = (month, year) => async dispatch => {
       delete data.uid;
       catData.push(data);
     });
-    //console.log(catData);
+    console.log(catData);
     return dispatch({
       type: GET_TRANSACTIONS_BYMONTH_SUCCESS,
       payload: catData,

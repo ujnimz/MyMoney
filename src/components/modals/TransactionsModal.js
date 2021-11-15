@@ -3,76 +3,11 @@ import {Modalize} from 'react-native-modalize';
 import {StyleSheet, View, Text, Animated} from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import {modalHeight, headerHeight} from '_utils/useDimensions';
-
+import Message from '_components/atoms/Message';
+import LoadingIcon from '_components/atoms/LoadingIcon';
 import TransactionItem from '../atoms/TransactionItem';
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'McDonalds',
-    category: 'Food',
-    amount: '5.650',
-    icon: 'fast-food',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Taxi',
-    category: 'Transportation',
-    amount: '2.000',
-    icon: 'car-sport',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-14557dsdsd72',
-    title: 'Supermarket',
-    category: 'Shopping',
-    amount: '6.580',
-    icon: 'basket',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-14557dsdsds7',
-    title: 'Batelco Bill',
-    category: 'Utility',
-    amount: '17.350',
-    icon: 'bulb',
-  },
-  {
-    id: '58694a0f-3da5-471f-bd96-14557dsdsds7',
-    title: 'Flat Rent',
-    category: 'Rentals',
-    amount: '17.350',
-    icon: 'business',
-  },
-  {
-    id: '58694a0f-3da1-481f-bd96-14557dsdsds7',
-    title: 'Zain Bill',
-    category: 'Utility',
-    amount: '21.750',
-    icon: 'bulb',
-  },
-  {
-    id: '58694a8f-3da1-471f-bd96-14557dsdsds7',
-    title: 'Office Transport',
-    category: 'Transportation',
-    amount: '60.000',
-    icon: 'car-sport',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd89-14557dsdsds7',
-    title: 'Max Fashion',
-    category: 'Shopping',
-    amount: '18.350',
-    icon: 'basket',
-  },
-  {
-    id: '58694a0f-3da1-981f-bd96-14557dsdsds7',
-    title: 'Credit Card',
-    category: 'Banking',
-    amount: '62.000',
-    icon: 'card',
-  },
-];
-
-const TransactionsModal = ({transactionData}) => {
+const TransactionsModal = ({isLoading, transactionData}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
@@ -82,7 +17,7 @@ const TransactionsModal = ({transactionData}) => {
 
   const renderItem = ({item}) => <TransactionItem item={item} />;
 
-  return (
+  return transactionData.length >= 1 ? (
     <Modalize
       modalStyle={styles.modal}
       ref={modalizeRef}
@@ -114,6 +49,24 @@ const TransactionsModal = ({transactionData}) => {
         },
       }}
     />
+  ) : (
+    <Modalize
+      modalStyle={styles.modal}
+      ref={modalizeRef}
+      modalTopOffset={headerHeight * 2}
+      //adjustToContentHeight={true}
+      alwaysOpen={modalHeight}
+      handlePosition={'inside'}
+    >
+      <View style={styles.header}>
+        <Text style={styles.title}>Recent Transactions</Text>
+      </View>
+      {isLoading ? (
+        <LoadingIcon />
+      ) : (
+        <Message message='No transactions found. Please add.' />
+      )}
+    </Modalize>
   );
 };
 
