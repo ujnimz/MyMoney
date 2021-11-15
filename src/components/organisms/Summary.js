@@ -1,28 +1,41 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {summaryHeight} from '_utils/useDimensions';
 import {useTheme} from '_theme/ThemeContext';
 import PieChart from '_components/atoms/PieChart';
 
-const Summary = () => {
+const Summary = ({
+  onPrevMonth,
+  onCurrMonthYear,
+  onNextMonth,
+  title,
+  disabled,
+}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
   return (
     <View style={styles.container}>
       <View style={styles.monthSection}>
-        <Ionicons
-          name='caret-back-circle-outline'
-          color={colors.black.content}
-          size={36}
-        />
-        <Text style={styles.monthText}>October</Text>
-        <Ionicons
-          name='caret-forward-circle-outline'
-          color={colors.black.content}
-          size={36}
-        />
+        <TouchableOpacity onPress={() => onPrevMonth()}>
+          <Ionicons
+            name='caret-back-circle-outline'
+            color={colors.black.content}
+            size={36}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => onCurrMonthYear()}>
+          <Text style={styles.title}>{title}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => onNextMonth()} disabled={disabled}>
+          <Ionicons
+            name='caret-forward-circle-outline'
+            color={colors.black.content}
+            size={36}
+            style={disabled ? {opacity: 0.4} : ''}
+          />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.centerSection}>
@@ -43,11 +56,13 @@ const useStyles = colors =>
     container: {
       height: summaryHeight,
       justifyContent: 'flex-start',
-      padding: 15,
+      paddingLeft: 30,
+      paddingRight: 30,
+      paddingTop: 15,
     },
     monthSection: {
       flexDirection: 'row',
-      justifyContent: 'space-evenly',
+      justifyContent: 'space-between',
       alignItems: 'center',
     },
     centerSection: {
@@ -55,7 +70,7 @@ const useStyles = colors =>
       alignItems: 'center',
       paddingBottom: 15,
     },
-    monthText: {
+    title: {
       fontSize: 22,
       fontWeight: 'bold',
       color: colors.black.content,

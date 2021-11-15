@@ -11,6 +11,10 @@ const DATA = [
     name: 'fast-food',
   },
   {
+    icon: 'wallet',
+    name: 'wallet',
+  },
+  {
     icon: 'car-sport',
     name: 'car-sport',
   },
