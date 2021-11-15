@@ -30,6 +30,8 @@ import {
   orderBy,
 } from '_firebase/fbConfig';
 
+import {getMonthName, getThisYear, getThisMonthIndex} from '_utils/useDateTime';
+
 import {Alert} from 'react-native';
 
 // TRANSACTIONS LOADING
@@ -115,13 +117,13 @@ export const getTransactionsByDate = (month, year) => async dispatch => {
       delete data.uid;
       catData.push(data);
     });
-    console.log(catData);
+    //console.log(catData);
     return dispatch({
       type: GET_TRANSACTIONS_BYMONTH_SUCCESS,
       payload: catData,
     });
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
         Alert.alert('Invalid', 'Please check your email address again.');
@@ -151,7 +153,7 @@ export const addTransaction = newTransaction => async dispatch => {
 
     await addDoc(collection(db, 'transactions'), newTransaction);
 
-    dispatch(getTransactions());
+    dispatch(getTransactionsByDate(getThisMonthIndex(), getThisYear()));
     return dispatch({
       type: ADD_TRANSACTION_SUCCESS,
     });

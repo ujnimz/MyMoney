@@ -79,6 +79,7 @@ const HomeScreen = ({navigation, getTransactionsByDate, transactionsState}) => {
           onPrevMonth={onPrevMonth}
           title={getTitle()}
           disabled={disable}
+          transactionData={transactionData}
         />
 
         <TransactionsModal
