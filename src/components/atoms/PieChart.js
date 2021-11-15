@@ -3,18 +3,21 @@ import {VictoryPie} from 'victory-native';
 import {useTheme} from '_theme/ThemeContext';
 import {pieSize} from '_utils/useDimensions';
 
-function PieChart() {
+function PieChart({creditTotal, debitTotal}) {
   const {colors} = useTheme();
 
+  const spent = (debitTotal / creditTotal) * 100;
+  const rem = 100 - spent;
+
   const graphicColor = [colors.white.focus, colors.white.main]; // Colors
-  const wantedGraphicData = [{y: 60}, {y: 40}]; // Data that we want to display
+  const wantedGraphicData = [{y: spent ? spent : 0}, {y: rem ? rem : 100}]; // Data that we want to display
   const defaultGraphicData = [{y: 0}, {y: 100}]; // Data used to make the animate prop work
 
   const [graphicData, setGraphicData] = useState(defaultGraphicData);
 
   useEffect(() => {
     setGraphicData(wantedGraphicData); // Setting the data that we want to display
-  }, []);
+  }, [creditTotal, debitTotal]);
 
   return (
     <>

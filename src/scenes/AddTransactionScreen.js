@@ -57,10 +57,6 @@ const AddTransactionScreen = ({
     return Number(amount.replace(/[^0-9.-]+/g, ''));
   };
 
-  const getMonthYear = date => {
-    return `${date.getMonth()}-${date.getFullYear()}`;
-  };
-
   // Add Data to Firebase
   const onAdd = async () => {
     return await addTransaction({
