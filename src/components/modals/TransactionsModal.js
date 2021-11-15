@@ -17,7 +17,7 @@ const TransactionsModal = ({isLoading, transactionData}) => {
 
   const renderItem = ({item}) => <TransactionItem item={item} />;
 
-  return transactionData.length >= 1 ? (
+  return transactionData && transactionData.length > 0 ? (
     <Modalize
       modalStyle={styles.modal}
       ref={modalizeRef}
