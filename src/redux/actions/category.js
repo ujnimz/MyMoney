@@ -24,7 +24,6 @@ import {
   collection,
   query,
   where,
-  serverTimestamp,
 } from '_firebase/fbConfig';
 
 import {Alert} from 'react-native';
@@ -144,7 +143,6 @@ export const updateCat = newCat => async dispatch => {
 
 // DELETE CATEGORY
 export const deleteCat = catId => async dispatch => {
-  console.log(catId);
   dispatch(setCatLoading());
   try {
     await deleteDoc(doc(db, 'categories', catId));

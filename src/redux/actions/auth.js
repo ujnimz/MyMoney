@@ -21,7 +21,7 @@ import {
   doc,
   addDoc,
   setDoc,
-  serverTimestamp,
+  Timestamp,
 } from '_firebase/fbConfig';
 
 import {Alert} from 'react-native';
@@ -125,7 +125,7 @@ export const registerUser = user => async dispatch => {
       name: name,
       currency: 'BHD',
       image: '',
-      createdAt: serverTimestamp(),
+      createdAt: Timestamp.now(),
     });
     return dispatch({
       type: REGISTER_SUCCESS,

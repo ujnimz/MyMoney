@@ -6,14 +6,7 @@ import {
   UPDATE_USER_FAIL,
 } from './types';
 
-import {
-  auth,
-  db,
-  doc,
-  getDoc,
-  updateDoc,
-  serverTimestamp,
-} from '_firebase/fbConfig';
+import {auth, db, doc, getDoc, updateDoc, Timestamp} from '_firebase/fbConfig';
 
 import {Alert} from 'react-native';
 
@@ -72,7 +65,7 @@ export const updateUser = userData => async dispatch => {
       name,
       currency,
       image,
-      updatedAt: serverTimestamp(),
+      updatedAt: Timestamp.now(),
     });
     dispatch(getUser());
     Alert.alert('Success', 'Profile updated successfully.');
