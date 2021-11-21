@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {summaryHeight} from '_utils/useDimensions';
+import {getMonthName} from '_utils/useDateTime';
 import {useTheme} from '_theme/ThemeContext';
 import PieChart from '_components/atoms/PieChart';
+
 // REDUX
 import {connect} from 'react-redux';
 
@@ -13,9 +15,10 @@ const Summary = ({
   onCurrMonthYear,
   onNextMonth,
   title,
-  disabled,
+  nextDisabled,
   transactionsState,
   transactionData,
+  timeState,
 }) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
@@ -23,7 +26,7 @@ const Summary = ({
   const [debitTotal, setDebitTotal] = useState(0);
   const [creditTotal, setCreditTotal] = useState(0);
 
-  //const {transactionData} = transactionsState;
+  const {time} = timeState;
 
   useEffect(() => {
     if (transactionData) {
@@ -76,14 +79,16 @@ const Summary = ({
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => onCurrMonthYear()}>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.title}>{`${getMonthName(time.curMonthIndex)} ${
+            time.curYear
+          }`}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => onNextMonth()} disabled={disabled}>
+        <TouchableOpacity onPress={() => onNextMonth()} disabled={nextDisabled}>
           <Ionicons
             name='caret-forward-circle-outline'
             color={colors.black.content}
             size={36}
-            style={disabled ? {opacity: 0.4} : ''}
+            style={nextDisabled ? {opacity: 0.4} : ''}
           />
         </TouchableOpacity>
       </View>
@@ -146,10 +151,12 @@ const useStyles = colors =>
 
 Summary.propTypes = {
   transactionsState: PropTypes.object.isRequired,
+  timeState: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => ({
   transactionsState: state.transactionsState,
+  timeState: state.timeState,
 });
 
 export default connect(mapStateToProps, null)(Summary);

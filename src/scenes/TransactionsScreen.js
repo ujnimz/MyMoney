@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {
   StyleSheet,
@@ -9,62 +9,53 @@ import {
 } from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {useTheme} from '_theme/ThemeContext';
-import {
-  getMonthName,
-  getThisYear,
-  getThisMonthIndex,
-  getNextMonthYear,
-  getPrevMonthYear,
-} from '_utils/useDateTime';
+import {getMonthName} from '_utils/useDateTime';
 import LoadingIcon from '_components/atoms/LoadingIcon';
 import Message from '_components/atoms/Message';
 import TransactionsList from '_components/molecules/TransactionsList';
 // REDUX
 import {connect} from 'react-redux';
 import {getTransactionsByDate} from '_redux/actions/transactions';
+import {
+  getCurrentTime,
+  getNextTime,
+  getPreviousTime,
+} from '_redux/actions/time';
 
-const TransactionsScreen = ({getTransactionsByDate, transactionsState}) => {
+const TransactionsScreen = ({
+  getTransactionsByDate,
+  getCurrentTime,
+  getNextTime,
+  getPreviousTime,
+  transactionsState,
+  timeState,
+}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
   const {isLoading, transactionData} = transactionsState;
-
-  const [monthIndex, setMonthIndex] = useState(getThisMonthIndex());
-  const [year, setYear] = useState(getThisYear());
-  const [disable, setDisable] = useState(true);
+  const {time, count} = timeState;
 
   // get current month's transactions
   useEffect(() => {
-    getTransactionsByDate(monthIndex, year);
-    // set next button disabled if this is the current month and year
-    monthIndex === getThisMonthIndex() && year === getThisYear()
-      ? setDisable(true)
-      : setDisable(false);
-  }, [monthIndex]);
+    if (time) {
+      getTransactionsByDate(time.curMonthIndex, time.curYear);
+    }
+  }, [time]);
 
   // change month index and year to next month
   const onNextMonth = () => {
-    const next = getNextMonthYear(monthIndex, year);
-    setMonthIndex(next.monthIndex);
-    setYear(next.year);
+    getNextTime(time.curMonthIndex, time.curYear);
   };
 
   // change month index and year to previous month
   const onPrevMonth = () => {
-    const prev = getPrevMonthYear(monthIndex, year);
-    setMonthIndex(prev.monthIndex);
-    setYear(prev.year);
+    getPreviousTime(time.curMonthIndex, time.curYear);
   };
 
   // change month index and year to current month and year
   const onCurrMonthYear = () => {
-    setMonthIndex(getThisMonthIndex());
-    setYear(getThisYear());
-  };
-
-  // return month and year title
-  const getTitle = () => {
-    return `${getMonthName(monthIndex)} ${year}`;
+    getCurrentTime();
   };
 
   return (
@@ -79,15 +70,17 @@ const TransactionsScreen = ({getTransactionsByDate, transactionsState}) => {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => onCurrMonthYear()}>
-          <Text style={styles.title}>{getTitle()}</Text>
+          <Text style={styles.title}>{`${getMonthName(time.curMonthIndex)} ${
+            time.curYear
+          }`}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => onNextMonth()} disabled={disable}>
+        <TouchableOpacity onPress={() => onNextMonth()} disabled={count === 0}>
           <Ionicons
             name='chevron-forward-circle-outline'
             color={colors.text.main}
             size={36}
-            style={disable ? {opacity: 0.4} : ''}
+            style={count === 0 ? {opacity: 0.4} : ''}
           />
         </TouchableOpacity>
       </View>
@@ -128,13 +121,21 @@ const useStyles = colors =>
 
 TransactionsScreen.propTypes = {
   transactionsState: PropTypes.object.isRequired,
+  timeState: PropTypes.object.isRequired,
   getTransactionsByDate: PropTypes.func.isRequired,
+  getCurrentTime: PropTypes.func.isRequired,
+  getNextTime: PropTypes.func.isRequired,
+  getPreviousTime: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   transactionsState: state.transactionsState,
+  timeState: state.timeState,
 });
 
 export default connect(mapStateToProps, {
   getTransactionsByDate,
+  getCurrentTime,
+  getNextTime,
+  getPreviousTime,
 })(TransactionsScreen);

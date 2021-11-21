@@ -1,13 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {useTheme} from '_theme/ThemeContext';
-import {
-  getMonthName,
-  getThisYear,
-  getThisMonthIndex,
-  getNextMonthYear,
-  getPrevMonthYear,
-} from '_utils/useDateTime';
+
 import {StyleSheet, View} from 'react-native';
 import GradientBackground from '_theme/GradientBackground';
 import Summary from '_components/organisms/Summary';
@@ -18,49 +12,47 @@ import TransactionsModal from '_components/modals/TransactionsModal';
 import {connect} from 'react-redux';
 import {authStatus} from '_redux/actions/auth';
 import {getTransactionsByDate} from '_redux/actions/transactions';
+import {
+  getCurrentTime,
+  getNextTime,
+  getPreviousTime,
+} from '_redux/actions/time';
 
-const HomeScreen = ({navigation, getTransactionsByDate, transactionsState}) => {
+const HomeScreen = ({
+  navigation,
+  transactionsState,
+  timeState,
+  getTransactionsByDate,
+  getCurrentTime,
+  getNextTime,
+  getPreviousTime,
+}) => {
   const {colors} = useTheme();
   const styles = useStyles();
 
   const {isLoading, transactionData} = transactionsState;
-
-  const [monthIndex, setMonthIndex] = useState(getThisMonthIndex());
-  const [year, setYear] = useState(getThisYear());
-  const [disable, setDisable] = useState(true);
+  const {time, count} = timeState;
 
   // get current month's transactions
   useEffect(() => {
-    getTransactionsByDate(monthIndex, year);
-    // set next button disabled if this is the current month and year
-    monthIndex === getThisMonthIndex() && year === getThisYear()
-      ? setDisable(true)
-      : setDisable(false);
-  }, [monthIndex]);
+    if (time) {
+      getTransactionsByDate(time.curMonthIndex, time.curYear);
+    }
+  }, [time]);
 
   // change month index and year to next month
   const onNextMonth = () => {
-    const next = getNextMonthYear(monthIndex, year);
-    setMonthIndex(next.monthIndex);
-    setYear(next.year);
+    getNextTime(time.curMonthIndex, time.curYear);
   };
 
   // change month index and year to previous month
   const onPrevMonth = () => {
-    const prev = getPrevMonthYear(monthIndex, year);
-    setMonthIndex(prev.monthIndex);
-    setYear(prev.year);
+    getPreviousTime(time.curMonthIndex, time.curYear);
   };
 
   // change month index and year to current month and year
   const onCurrMonthYear = () => {
-    setMonthIndex(getThisMonthIndex());
-    setYear(getThisYear());
-  };
-
-  // return month and year title
-  const getTitle = () => {
-    return `${getMonthName(monthIndex)} ${year}`;
+    getCurrentTime();
   };
 
   return (
@@ -77,8 +69,7 @@ const HomeScreen = ({navigation, getTransactionsByDate, transactionsState}) => {
           onNextMonth={onNextMonth}
           onCurrMonthYear={onCurrMonthYear}
           onPrevMonth={onPrevMonth}
-          title={getTitle()}
-          disabled={disable}
+          nextDisabled={count === 0}
           transactionData={transactionData}
         />
 
@@ -102,15 +93,24 @@ const useStyles = () =>
 
 HomeScreen.propTypes = {
   transactionsState: PropTypes.object.isRequired,
+  timeState: PropTypes.object.isRequired,
   navigation: PropTypes.object.isRequired,
   authStatus: PropTypes.func.isRequired,
   getTransactionsByDate: PropTypes.func.isRequired,
+  getCurrentTime: PropTypes.func.isRequired,
+  getNextTime: PropTypes.func.isRequired,
+  getPreviousTime: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   transactionsState: state.transactionsState,
+  timeState: state.timeState,
 });
 
-export default connect(mapStateToProps, {authStatus, getTransactionsByDate})(
-  HomeScreen,
-);
+export default connect(mapStateToProps, {
+  authStatus,
+  getTransactionsByDate,
+  getCurrentTime,
+  getNextTime,
+  getPreviousTime,
+})(HomeScreen);

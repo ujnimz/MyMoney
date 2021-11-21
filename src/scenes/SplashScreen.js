@@ -7,12 +7,14 @@ import LoadingScreen from '_scenes/LoadingScreen';
 // REDUX
 import {connect} from 'react-redux';
 import {authStatus} from '_redux/actions/auth';
+import {getCurrentTime} from '_redux/actions/time';
 
-const SplashScreen = ({authState, authStatus}) => {
+const SplashScreen = ({authState, authStatus, getCurrentTime}) => {
   const {isInitializing, user} = authState;
 
   useEffect(() => {
     authStatus();
+    getCurrentTime();
   }, [isInitializing]);
 
   if (isInitializing) {
@@ -29,10 +31,13 @@ const SplashScreen = ({authState, authStatus}) => {
 SplashScreen.propTypes = {
   authState: PropTypes.object.isRequired,
   authStatus: PropTypes.func.isRequired,
+  getCurrentTime: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   authState: state.authState,
 });
 
-export default connect(mapStateToProps, {authStatus})(SplashScreen);
+export default connect(mapStateToProps, {authStatus, getCurrentTime})(
+  SplashScreen,
+);

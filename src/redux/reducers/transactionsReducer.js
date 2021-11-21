@@ -16,6 +16,8 @@ import {
 const initialState = {
   isLoading: false,
   transactionData: null,
+  month: null,
+  year: null,
   isCompleted: false,
 };
 

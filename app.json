@@ -13,7 +13,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -26,6 +28,8 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "userInterfaceStyle": "automatic"
+    "userInterfaceStyle": "automatic",
+    "description": "A simple budget app to manage your income and expenses.\n\nTechs: React Native, Redux, Firebase",
+    "githubUrl": "https://github.com/ujnimz/MyMoney"
   }
 }
