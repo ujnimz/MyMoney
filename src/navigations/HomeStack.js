@@ -5,9 +5,9 @@ import {useTheme} from '_theme/ThemeContext';
 import HomeScreen from '_scenes/HomeScreen';
 import SettingsScreen from '_scenes/SettingsScreen';
 import CategoryScreen from '_scenes/CategoryScreen';
-import AddCategoryScreen from '_scenes/AddCategoryScreen';
 import ProfileScreen from '_scenes/ProfileScreen';
 import TermsScreen from '_scenes/TermsScreen';
+import DangerousZoneScreen from '_scenes/DangerousZoneScreen';
 
 const Stack = createStackNavigator();
 
@@ -65,6 +65,22 @@ const HomeStack = () => {
         component={ProfileScreen}
         options={{
           title: 'Profile Settings',
+          headerLeft: ({canGoBack, onPress}) =>
+            canGoBack && (
+              <Ionicons
+                name='chevron-back'
+                onPress={onPress}
+                color={colors.secondary.content}
+                size={40}
+              />
+            ),
+        }}
+      />
+      <Stack.Screen
+        name='DangerousZone'
+        component={DangerousZoneScreen}
+        options={{
+          title: 'Dangerous Zone',
           headerLeft: ({canGoBack, onPress}) =>
             canGoBack && (
               <Ionicons

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {
   StyleSheet,
@@ -106,6 +106,18 @@ const SettingsScreen = ({
               onPress={() => navigation.navigate('Profile')}
             >
               <Text style={styles.label}>Profile Settings</Text>
+              <Ionicons
+                name='chevron-forward'
+                color={colors.text.main}
+                size={30}
+              />
+            </TouchableOpacity>
+            <View style={styles.sectionDivider}></View>
+            <TouchableOpacity
+              style={styles.section}
+              onPress={() => navigation.navigate('DangerousZone')}
+            >
+              <Text style={styles.label}>Dangerous Zone</Text>
               <Ionicons
                 name='chevron-forward'
                 color={colors.text.main}
