@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   signOut,
+  deleteUser,
 } from 'firebase/auth';
 import {getStorage} from 'firebase/storage';
 import {
@@ -54,6 +55,7 @@ export {
   signInWithEmailAndPassword,
   updateProfile,
   signOut,
+  deleteUser,
   db,
   doc,
   getDoc,

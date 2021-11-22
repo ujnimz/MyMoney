@@ -6,7 +6,12 @@ import {pieSize} from '_utils/useDimensions';
 function PieChart({creditTotal, debitTotal}) {
   const {colors} = useTheme();
 
-  const spent = (debitTotal / creditTotal) * 100;
+  let spent = 0;
+  console.log(creditTotal);
+  if (creditTotal > 0 && debitTotal > 0) {
+    spent = (debitTotal / creditTotal) * 100;
+  }
+
   const rem = 100 - spent;
 
   const graphicColor = [colors.white.focus, colors.white.main]; // Colors

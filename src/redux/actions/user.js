@@ -4,9 +4,19 @@ import {
   GET_USER_FAIL,
   UPDATE_USER_SUCCESS,
   UPDATE_USER_FAIL,
+  DELETE_USER_SUCCESS,
+  DELETE_USER_FAIL,
 } from './types';
 
-import {auth, db, doc, getDoc, updateDoc, Timestamp} from '_firebase/fbConfig';
+import {
+  auth,
+  db,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteUser,
+  Timestamp,
+} from '_firebase/fbConfig';
 
 import {Alert} from 'react-native';
 
@@ -82,6 +92,34 @@ export const updateUser = userData => async dispatch => {
     }
     return dispatch({
       type: UPDATE_USER_FAIL,
+    });
+  }
+};
+
+// DELETE_USER
+export const removeUser = () => async dispatch => {
+  dispatch(setUserLoading());
+  try {
+    const user = auth.currentUser;
+    await deleteDoc(doc(db, 'users', user.uid));
+    // Here Add delete all the transactions
+    await deleteUser(user);
+
+    Alert.alert('Success', 'Profile deleted successfully.');
+    return dispatch({
+      type: DELETE_USER_SUCCESS,
+    });
+  } catch (error) {
+    console.log(error);
+    switch (error.code) {
+      case 'auth/invalid-email':
+        Alert.alert('Invalid', 'Please check your email address again.');
+        break;
+      default:
+        Alert.alert('Oops!', 'Something went wrong.');
+    }
+    return dispatch({
+      type: DELETE_USER_FAIL,
     });
   }
 };
