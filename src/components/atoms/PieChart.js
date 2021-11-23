@@ -7,7 +7,6 @@ function PieChart({creditTotal, debitTotal}) {
   const {colors} = useTheme();
 
   let spent = 0;
-  console.log(creditTotal);
   if (creditTotal > 0 && debitTotal > 0) {
     spent = (debitTotal / creditTotal) * 100;
   }

@@ -4,6 +4,8 @@ import {
   GET_USER_FAIL,
   UPDATE_USER_SUCCESS,
   UPDATE_USER_FAIL,
+  DELETE_USER_SUCCESS,
+  DELETE_USER_FAIL,
 } from '_redux/actions/types';
 
 const initialState = {
@@ -40,6 +42,18 @@ const authReducer = (state = initialState, action) => {
         ...state,
         isLoading: false,
       };
+    case DELETE_USER_SUCCESS:
+      return {
+        ...state,
+        userData: null,
+        isLoading: false,
+      };
+    case DELETE_USER_FAIL:
+      return {
+        ...state,
+        isLoading: false,
+      };
+
     default:
       return state;
   }

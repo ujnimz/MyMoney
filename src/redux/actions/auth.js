@@ -24,7 +24,7 @@ import {
   Timestamp,
 } from '_firebase/fbConfig';
 
-import {Alert} from 'react-native';
+import {showMessage} from 'react-native-flash-message';
 
 // AUTH LOADING
 export const setAuthLoading = () => {
@@ -52,10 +52,16 @@ export const authStatus = () => async dispatch => {
   } catch (error) {
     switch (error.code) {
       case 'auth/user-token-expired':
-        Alert.alert('Expired', 'The user session expired. Login again.');
+        showMessage({
+          message: 'The user session expired. Login again.',
+          type: 'danger',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: AUTH_FAIL,
@@ -66,8 +72,16 @@ export const authStatus = () => async dispatch => {
 // LOGIN
 export const loginUser = user => async dispatch => {
   const {email, password} = user;
-  if (email === '') return Alert.alert('Invalid!', 'Please add you email.');
-  if (password === '') return Alert.alert('Invalid!', 'Please add a password.');
+  if (email === '')
+    return showMessage({
+      message: 'Please add your email.',
+      type: 'warning',
+    });
+  if (password === '')
+    return showMessage({
+      message: 'Please add your password.',
+      type: 'warning',
+    });
   dispatch(setAuthLoading());
   try {
     const userCredential = await signInWithEmailAndPassword(
@@ -82,25 +96,35 @@ export const loginUser = user => async dispatch => {
   } catch (error) {
     switch (error.code) {
       case 'auth/invalid-email':
-        Alert.alert('Invalid', 'Please check your email address again.');
+        showMessage({
+          message: 'Please check your email address again.',
+          type: 'warning',
+        });
         break;
       case 'auth/wrong-password':
-        Alert.alert('Wrong Password', 'Please check your password again.');
+        showMessage({
+          message: 'Please check your password again.',
+          type: 'warning',
+        });
         break;
       case 'auth/user-not-found':
-        Alert.alert(
-          'Not Found',
-          'There is no user corresponding to the given email.',
-        );
+        showMessage({
+          message: 'There is no user corresponding to the given email.',
+          type: 'warning',
+        });
         break;
       case 'auth/user-disabled':
-        Alert.alert(
-          'Disabled',
-          'The user corresponding to the given email has been disabled.',
-        );
+        showMessage({
+          message:
+            'The user corresponding to the given email has been disabled.',
+          type: 'warning',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: LOGIN_FAIL,
@@ -111,9 +135,21 @@ export const loginUser = user => async dispatch => {
 // REGISTER
 export const registerUser = user => async dispatch => {
   const {name, email, password} = user;
-  if (name === '') return Alert.alert('Invalid!', 'Please add your name.');
-  if (email === '') return Alert.alert('Invalid!', 'Please add you email.');
-  if (password === '') return Alert.alert('Invalid!', 'Please add a password.');
+  if (name === '')
+    return showMessage({
+      message: 'Please add your name.',
+      type: 'warning',
+    });
+  if (email === '')
+    return showMessage({
+      message: 'Please add a valid email.',
+      type: 'warning',
+    });
+  if (password === '')
+    return showMessage({
+      message: 'Please add a password.',
+      type: 'warning',
+    });
   dispatch(setAuthLoading());
   try {
     const userCredential = await createUserWithEmailAndPassword(
@@ -127,6 +163,12 @@ export const registerUser = user => async dispatch => {
       image: '',
       createdAt: Timestamp.now(),
     });
+
+    showMessage({
+      message: 'Hi, Welcome!. Your account has been created successfully.',
+      type: 'success',
+    });
+
     return dispatch({
       type: REGISTER_SUCCESS,
       payload: userCredential.user.email,
@@ -134,16 +176,28 @@ export const registerUser = user => async dispatch => {
   } catch (error) {
     switch (error.code) {
       case 'auth/email-already-in-use':
-        Alert.alert('Invalid!', 'The email address is already in use.');
+        showMessage({
+          message: 'The email address is already in use.',
+          type: 'warning',
+        });
         break;
       case 'auth/invalid-email':
-        Alert.alert('Invalid!', 'Please check your email address again.');
+        showMessage({
+          message: 'Please check your email address again.',
+          type: 'warning',
+        });
         break;
       case 'auth/weak-password':
-        Alert.alert('Invalid!', 'The password is not strong enough.');
+        showMessage({
+          message: 'The password is not strong enough.',
+          type: 'warning',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: REGISTER_FAIL,
@@ -156,11 +210,20 @@ export const logoutUser = () => async dispatch => {
   dispatch(setAuthLoading());
   try {
     await signOut(auth);
+
+    showMessage({
+      message: 'You are signed out successfully.',
+      type: 'success',
+    });
+
     return dispatch({
       type: LOGOUT_SUCCESS,
     });
   } catch (error) {
-    console.log(error);
+    showMessage({
+      message: 'There was an error.',
+      type: 'danger',
+    });
     return dispatch({
       type: LOGOUT_FAIL,
     });

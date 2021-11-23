@@ -10,15 +10,24 @@ import {
 
 import {
   auth,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   db,
   doc,
   getDoc,
   updateDoc,
   deleteUser,
   Timestamp,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  deleteDoc,
+  writeBatch,
 } from '_firebase/fbConfig';
 
-import {Alert} from 'react-native';
+import {showMessage} from 'react-native-flash-message';
 
 // USER LOADING
 export const setUserLoading = () => {
@@ -40,7 +49,10 @@ export const getUser = () => async dispatch => {
       userData = docSnap.data();
     } else {
       // doc.data() will be undefined in this case
-      console.log('No such document!');
+      showMessage({
+        message: 'Something went wrong. No user account.',
+        type: 'danger',
+      });
     }
 
     return dispatch({
@@ -50,10 +62,16 @@ export const getUser = () => async dispatch => {
   } catch (error) {
     switch (error.code) {
       case 'auth/invalid-email':
-        Alert.alert('Invalid', 'Please check your email address again.');
+        showMessage({
+          message: 'Please check your email address again.',
+          type: 'danger',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: GET_USER_FAIL,
@@ -64,31 +82,48 @@ export const getUser = () => async dispatch => {
 // UPDATE_USER
 export const updateUser = userData => async dispatch => {
   const {name, currency, image} = userData;
-  if (name === '') return Alert.alert('Invalid!', 'Please add your full name.');
+  if (name === '')
+    return showMessage({
+      message: 'Please enter your name.',
+      type: 'warning',
+    });
   if (currency === '')
-    return Alert.alert('Invalid!', 'Please add the currency.');
+    return showMessage({
+      message: 'Please add the currency.',
+      type: 'warning',
+    });
   dispatch(setUserLoading());
   try {
     const user = auth.currentUser;
     const docRef = doc(db, 'users', user.uid);
-    const docSnap = await updateDoc(docRef, {
+    await updateDoc(docRef, {
       name,
       currency,
       image,
       updatedAt: Timestamp.now(),
     });
     dispatch(getUser());
-    Alert.alert('Success', 'Profile updated successfully.');
+
+    showMessage({
+      message: 'Profile updated successfully.',
+      type: 'success',
+    });
     return dispatch({
       type: UPDATE_USER_SUCCESS,
     });
   } catch (error) {
     switch (error.code) {
       case 'auth/invalid-email':
-        Alert.alert('Invalid', 'Please check your email address again.');
+        showMessage({
+          message: 'Please check your email address again.',
+          type: 'danger',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: UPDATE_USER_FAIL,
@@ -97,26 +132,73 @@ export const updateUser = userData => async dispatch => {
 };
 
 // DELETE_USER
-export const removeUser = () => async dispatch => {
+export const removeUser = password => async dispatch => {
   dispatch(setUserLoading());
   try {
     const user = auth.currentUser;
+
+    const credentials = await EmailAuthProvider.credential(
+      user.email,
+      password,
+    );
+    await reauthenticateWithCredential(user, credentials);
+
+    const batch = writeBatch(db);
+
+    // To Delete all the transactions
+    const traRef = collection(db, 'transactions');
+    const traQ = query(
+      traRef,
+      where('uid', '==', user.uid),
+      orderBy('date', 'desc'),
+    );
+    const traQSnapshot = await getDocs(traQ);
+    traQSnapshot.forEach(({id}) => {
+      const traDocRef = doc(db, 'transactions', id);
+      batch.delete(traDocRef);
+    });
+
+    // To Delete all the categories
+    const catRef = collection(db, 'categories');
+    const catQ = query(catRef, where('uid', '==', user.uid));
+    const catQSnapshot = await getDocs(catQ);
+    catQSnapshot.forEach(({id}) => {
+      const catDocRef = doc(db, 'categories', id);
+      batch.delete(catDocRef);
+    });
+    // Delete all the transactions and categories
+    await batch.commit();
+    // Delete user details document
     await deleteDoc(doc(db, 'users', user.uid));
-    // Here Add delete all the transactions
+    // Finally delete the user account
     await deleteUser(user);
 
-    Alert.alert('Success', 'Profile deleted successfully.');
+    showMessage({
+      message: 'Profile deleted successfully.',
+      type: 'success',
+    });
     return dispatch({
       type: DELETE_USER_SUCCESS,
     });
   } catch (error) {
-    console.log(error);
     switch (error.code) {
-      case 'auth/invalid-email':
-        Alert.alert('Invalid', 'Please check your email address again.');
+      case 'auth/wrong-password':
+        showMessage({
+          message: 'The password you entered is invalid.',
+          type: 'danger',
+        });
+        break;
+      case 'auth/too-many-requests':
+        showMessage({
+          message: 'Account temporary disabled. Try again later.',
+          type: 'danger',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: DELETE_USER_FAIL,

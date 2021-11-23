@@ -2,8 +2,10 @@ import {initializeApp} from 'firebase/app';
 import {
   getAuth,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  EmailAuthProvider,
   updateProfile,
   signOut,
   deleteUser,
@@ -23,6 +25,7 @@ import {
   where,
   Timestamp,
   orderBy,
+  writeBatch,
 } from 'firebase/firestore';
 
 // Optionally import the services that you want to use
@@ -51,8 +54,10 @@ const db = getFirestore();
 export {
   auth,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  EmailAuthProvider,
   updateProfile,
   signOut,
   deleteUser,
@@ -69,4 +74,5 @@ export {
   where,
   Timestamp,
   orderBy,
+  writeBatch,
 };

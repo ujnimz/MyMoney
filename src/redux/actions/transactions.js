@@ -33,9 +33,9 @@ import {
   orderBy,
 } from '_firebase/fbConfig';
 
-import {getMonthName, getThisYear, getThisMonthIndex} from '_utils/useDateTime';
+import {getThisYear, getThisMonthIndex} from '_utils/useDateTime';
 
-import {Alert} from 'react-native';
+import {showMessage} from 'react-native-flash-message';
 
 // TRANSACTIONS LOADING
 export const setTransactionLoading = () => {
@@ -80,13 +80,18 @@ export const getTransactions = () => async dispatch => {
       payload: catData,
     });
   } catch (error) {
-    console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
-        Alert.alert('Invalid', 'Please check your email address again.');
+        showMessage({
+          message: 'Please check your email address again.',
+          type: 'warning',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: GET_TRANSACTIONS_FAIL,
@@ -126,13 +131,18 @@ export const getTransactionsByDate = (month, year) => async dispatch => {
       payload: catData,
     });
   } catch (error) {
-    //console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
-        Alert.alert('Invalid', 'Please check your email address again.');
+        showMessage({
+          message: 'Please check your email address again.',
+          type: 'warning',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: GET_TRANSACTIONS_BYMONTH_FAIL,
@@ -143,10 +153,26 @@ export const getTransactionsByDate = (month, year) => async dispatch => {
 // ADD TRANSACTION
 export const addTransaction = newTransaction => async dispatch => {
   const {amount, notes, category, date} = newTransaction;
-  if (amount === '') return Alert.alert('Invalid!', 'Please add the amount.');
-  if (notes === '') return Alert.alert('Invalid!', 'Please add a note.');
-  if (!category) return Alert.alert('Invalid!', 'Please choose a category');
-  if (!date) return Alert.alert('Invalid!', 'Please choose a date.');
+  if (amount === '')
+    return showMessage({
+      message: 'Please add amount.',
+      type: 'warning',
+    });
+  if (notes === '')
+    return showMessage({
+      message: 'Please add a note.',
+      type: 'warning',
+    });
+  if (!category)
+    return showMessage({
+      message: 'Please choose a category',
+      type: 'warning',
+    });
+  if (!date)
+    return showMessage({
+      message: 'Please choose a date.',
+      type: 'warning',
+    });
   dispatch(setTransactionLoading());
   try {
     const user = auth.currentUser;
@@ -157,16 +183,28 @@ export const addTransaction = newTransaction => async dispatch => {
     await addDoc(collection(db, 'transactions'), newTransaction);
 
     dispatch(getTransactionsByDate(getThisMonthIndex(), getThisYear()));
+
+    showMessage({
+      message: 'The transaction has been added successfully.',
+      type: 'success',
+    });
+
     return dispatch({
       type: ADD_TRANSACTION_SUCCESS,
     });
   } catch (error) {
     switch (error.code) {
       case 'auth/invalid-email':
-        Alert.alert('Invalid', 'Please check your email address again.');
+        showMessage({
+          message: 'Please check your email address again.',
+          type: 'warning',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: ADD_TRANSACTION_FAIL,
@@ -177,8 +215,16 @@ export const addTransaction = newTransaction => async dispatch => {
 // UPDATE TRANSACTION
 export const updateTransaction = newTransaction => async dispatch => {
   const {id, title, icon, type} = newTransaction;
-  if (title === '') return Alert.alert('Invalid!', 'Please add category name.');
-  if (icon === '') return Alert.alert('Invalid!', 'Please choose an icon.');
+  if (title === '')
+    return showMessage({
+      message: 'Please add category name.',
+      type: 'warning',
+    });
+  if (icon === '')
+    return showMessage({
+      message: 'Please choose an icon.',
+      type: 'warning',
+    });
   dispatch(setTransactionLoading());
   try {
     const user = auth.currentUser;
@@ -190,16 +236,28 @@ export const updateTransaction = newTransaction => async dispatch => {
       type,
     });
     dispatch(getTransactions());
+
+    showMessage({
+      message: 'The transaction has been updated successfully.',
+      type: 'success',
+    });
+
     return dispatch({
       type: UPDATE_TRANSACTION_SUCCESS,
     });
   } catch (error) {
     switch (error.code) {
       case 'auth/invalid-email':
-        Alert.alert('Invalid', 'Please check your email address again.');
+        showMessage({
+          message: 'Please check your email address again.',
+          type: 'warning',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: UPDATE_TRANSACTION_FAIL,
@@ -213,16 +271,28 @@ export const deleteTransaction = catId => async dispatch => {
   try {
     await deleteDoc(doc(db, 'transactions', catId));
     dispatch(getTransactions());
+
+    showMessage({
+      message: 'The transaction has been deleted successfully.',
+      type: 'success',
+    });
+
     return dispatch({
       type: DELETE_TRANSACTION_SUCCESS,
     });
   } catch (error) {
     switch (error.code) {
       case 'auth/invalid-email':
-        Alert.alert('Invalid', 'Please check your email address again.');
+        showMessage({
+          message: 'Please check your email address again.',
+          type: 'warning',
+        });
         break;
       default:
-        Alert.alert('Oops!', 'Something went wrong.');
+        showMessage({
+          message: 'Something went wrong.',
+          type: 'danger',
+        });
     }
     return dispatch({
       type: DELETE_TRANSACTION_FAIL,

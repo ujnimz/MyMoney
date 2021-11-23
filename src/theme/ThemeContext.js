@@ -3,6 +3,7 @@ import {Appearance} from 'react-native';
 //import {useColorScheme} from 'react-native-appearance';
 import {lightColors, darkColors} from './colorThemes';
 import {StatusBar} from 'react-native';
+import FlashMessage from 'react-native-flash-message';
 
 export const ThemeContext = React.createContext({
   isDark: false,
@@ -41,6 +42,7 @@ export const ThemeProvider = props => {
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
       {props.children}
+      <FlashMessage position='top' />
     </ThemeContext.Provider>
   );
 };

@@ -56,49 +56,43 @@ const ProfileScreen = ({getUser, updateUser, userState, authState}) => {
       style={styles.container}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        {isLoading ? (
-          <View style={styles.loading}>
-            <ActivityIndicator size='small' color={colors.text.main} />
-          </View>
-        ) : (
-          <View style={styles.form}>
-            <FormTextInput
-              value={name}
-              onChangeText={val => setName(val)}
-              name='name'
-              placeholder='Name'
-              textContentType='name'
-              autoFocus={true}
-            />
-            <FormTextInput
-              value={image}
-              onChangeText={val => setImage(val)}
-              name='image'
-              placeholder='Image'
-            />
-            <FormTextSelect
-              modalizeRef={modalizeRef}
-              onChangeText={val => setCurrency(val)}
-              name='currency'
-              value={currency}
-              placeholder='Select Currency'
-            />
+        <View style={styles.form}>
+          <FormTextInput
+            value={name}
+            onChangeText={val => setName(val)}
+            name='name'
+            placeholder='Name'
+            textContentType='name'
+            autoFocus={true}
+          />
+          <FormTextInput
+            value={image}
+            onChangeText={val => setImage(val)}
+            name='image'
+            placeholder='Image'
+          />
+          <FormTextSelect
+            modalizeRef={modalizeRef}
+            onChangeText={val => setCurrency(val)}
+            name='currency'
+            value={currency}
+            placeholder='Select Currency'
+          />
 
-            <FormButton
-              text='Update'
-              bgColor={colors.primary.main}
-              textColor={colors.primary.content}
-              isAnimating={isLoading}
-              onPress={() => handleUpdateUser()}
-            />
+          <FormButton
+            text='Update'
+            bgColor={colors.primary.main}
+            textColor={colors.primary.content}
+            isAnimating={isLoading}
+            onPress={() => handleUpdateUser()}
+          />
 
-            <AddCurrencyModal
-              modalizeRef={modalizeRef}
-              currency={currency}
-              setCurrency={setCurrency}
-            />
-          </View>
-        )}
+          <AddCurrencyModal
+            modalizeRef={modalizeRef}
+            currency={currency}
+            setCurrency={setCurrency}
+          />
+        </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );

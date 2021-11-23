@@ -8,6 +8,7 @@ import FormIconButton from '_components/atoms/FormIconButton';
 import FormTextInput from '_components/atoms/FormTextInput';
 import FormIconSelect from '_components/atoms/FormIconSelect';
 import FormTextSwitch from '_components/atoms/FormTextSwitch';
+import AlertPopup from '_components/atoms/AlertPopup';
 // REDUX
 import {connect} from 'react-redux';
 import {
@@ -29,6 +30,9 @@ const AddCategoryScreen = ({
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
+  const [id, setId] = useState(
+    route.params?.cat ? route.params.cat.id : undefined,
+  );
   const [title, setTitle] = useState(
     route.params?.cat ? route.params.cat.title : '',
   );
@@ -38,38 +42,39 @@ const AddCategoryScreen = ({
   const [type, setType] = useState(
     route.params?.cat ? route.params.cat.type : 'debit',
   );
+  // Show or hide alert popup
+  const [showAlert, setShowAlert] = useState(false);
 
   const {isLoading, isCompleted} = catState;
 
   const modalizeRef = useRef(null);
-
+  // Add a new category
   const onAdd = async () => {
     return await addCat({title, icon, type});
   };
-
-  const onUpdate = async id => {
-    return await updateCat({id, title, icon, type});
+  // Update an exisiting category
+  const onUpdate = async () => {
+    if (id) {
+      await updateCat({id, title, icon, type});
+    }
+    return;
   };
-
-  const onDelete = id => {
-    return Alert.alert(
-      'Are your sure?',
-      'Are you sure you want to delete ' + title + ' from categories?',
-      [
-        // The "Yes" button
-        {
-          text: 'Yes',
-          onPress: async () => {
-            await deleteCat(id);
-          },
-        },
-        // The "No" button
-        // Does nothing but dismiss the dialog when tapped
-        {
-          text: 'No',
-        },
-      ],
-    );
+  // Show alert poup
+  const showDialog = () => {
+    return setShowAlert(true);
+  };
+  // Hide alert popup
+  const handleCancel = () => {
+    return setShowAlert(false);
+  };
+  // delete category on Delete
+  const handleDelete = async () => {
+    if (id) {
+      await deleteCat(id);
+      setId(undefined);
+      setShowAlert(false);
+    }
+    return;
   };
 
   useEffect(() => {
@@ -115,11 +120,7 @@ const AddCategoryScreen = ({
           bgColor={colors.primary.main}
           textColor={colors.primary.content}
           isAnimating={isLoading}
-          onPress={
-            route.params?.cat
-              ? () => onUpdate(route.params.cat.id)
-              : () => onAdd()
-          }
+          onPress={route.params?.cat ? () => onUpdate() : () => onAdd()}
         />
 
         {route.params?.cat ? (
@@ -128,12 +129,21 @@ const AddCategoryScreen = ({
             bgColor={colors.primary.main}
             textColor={colors.primary.content}
             isAnimating={isLoading}
-            onPress={() => onDelete(route.params.cat.id)}
+            onPress={() => showDialog()}
           />
         ) : (
           <View></View>
         )}
       </View>
+
+      <AlertPopup
+        visible={showAlert}
+        title='Delete category'
+        message={`Are you sure you want to delete ${title} from categories?`}
+        handleCancel={handleCancel}
+        handleOk={handleDelete}
+        okLabel='Delete'
+      />
 
       <AddIconModal modalizeRef={modalizeRef} icon={icon} setIcon={setIcon} />
     </View>

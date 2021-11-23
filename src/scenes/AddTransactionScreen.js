@@ -6,6 +6,7 @@ import FormButton from '_components/atoms/FormButton';
 import FormTextInput from '_components/atoms/FormTextInput';
 import FormCategorySelect from '_components/atoms/FormCategorySelect';
 import FormDateSelect from '_components/atoms/FormDateSelect';
+
 // REDUX
 import {connect} from 'react-redux';
 import {addTransaction, rollbackCompleted} from '_redux/actions/transactions';
@@ -60,12 +61,12 @@ const AddTransactionScreen = ({
   // Add Data to Firebase
   const onAdd = async () => {
     return await addTransaction({
-      amount: convertToNumber(amount),
+      amount: amount === '' ? '' : convertToNumber(amount),
       notes,
       category,
       date,
-      month: date.getMonth(),
-      year: date.getFullYear(),
+      month: date ? date.getMonth() : '',
+      year: date ? date.getFullYear() : '',
     });
   };
 

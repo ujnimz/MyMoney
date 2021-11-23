@@ -1,35 +1,41 @@
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, Text, View, Alert} from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import FormButton from '_components/atoms/FormButton';
+import AlertInputPopup from '_components/atoms/AlertInputPopup';
 // REDUX
 import {connect} from 'react-redux';
 import {removeUser} from '_redux/actions/user';
 
-const DangerousZoneScreen = ({removeUser}) => {
+const DangerousZoneScreen = ({userState, removeUser}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
-  const handleDelete = () => {
-    return Alert.alert(
-      'Are your sure?',
-      'Are you sure you want to delete all your data?',
-      [
-        // The "Yes" button
-        {
-          text: 'Yes',
-          onPress: async () => {
-            await removeUser();
-          },
-        },
-        // The "No" button
-        // Does nothing but dismiss the dialog when tapped
-        {
-          text: 'No',
-        },
-      ],
-    );
+  const [visible, setVisible] = useState(false);
+  const [password, setPassword] = useState('');
+  const [isError, setIsError] = useState(false);
+
+  const {isLoading} = userState;
+
+  const showDialog = () => {
+    setVisible(true);
+  };
+
+  const handleCancel = () => {
+    return setVisible(false);
+  };
+
+  const handleDelete = async () => {
+    // ...Your logic
+    if (password !== '') {
+      setIsError(false);
+      await removeUser(password);
+      setVisible(false);
+      setPassword('');
+    } else {
+      setIsError(true);
+    }
   };
 
   return (
@@ -48,8 +54,20 @@ const DangerousZoneScreen = ({removeUser}) => {
         text='Delete My Account'
         bgColor={colors.primary.main}
         textColor={colors.primary.content}
-        //isAnimating={isLoading}
-        onPress={() => handleDelete()}
+        isAnimating={isLoading}
+        onPress={() => showDialog()}
+      />
+
+      <AlertInputPopup
+        visible={visible}
+        title='Account delete'
+        message='Do you want to delete this account? You cannot undo this action.'
+        inputValue={password}
+        setInputValue={setPassword}
+        isError={isError}
+        handleCancel={handleCancel}
+        handleOk={handleDelete}
+        okLabel='Delete'
       />
     </View>
   );
@@ -79,13 +97,11 @@ const useStyles = colors =>
   });
 
 DangerousZoneScreen.propTypes = {
-  authState: PropTypes.object.isRequired,
   userState: PropTypes.object.isRequired,
   removeUser: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-  authState: state.authState,
   userState: state.userState,
 });
 
