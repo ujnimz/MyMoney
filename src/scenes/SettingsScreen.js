@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {
   StyleSheet,
@@ -13,11 +13,14 @@ import {useTheme} from '_theme/ThemeContext';
 import ColorCard from '_theme/ColorCard';
 import ThemeSwitch from '_components/atoms/ThemeSwitch';
 import FormButton from '_components/atoms/FormButton';
-const loaderImage = require('_assets/loading.gif');
+import AlertPopup from '_components/atoms/AlertPopup';
+
 // REDUX
 import {connect} from 'react-redux';
 import {logoutUser} from '_redux/actions/auth';
 import {getUser} from '_redux/actions/user';
+
+const loaderImage = require('_assets/loading.gif');
 
 const SettingsScreen = ({
   navigation,
@@ -31,29 +34,27 @@ const SettingsScreen = ({
 
   const {isLoading, userData} = userState;
 
+  // Show or hide alert popup
+  const [showAlert, setShowAlert] = useState(false);
+
   useEffect(() => {
     getUser();
+    return () => {
+      setShowAlert(false);
+    };
   }, []);
 
-  const handleLogout = () => {
-    return Alert.alert(
-      'Are your sure?',
-      'Are you sure you want to logout from MyMoney App?',
-      [
-        // The "Yes" button
-        {
-          text: 'Yes',
-          onPress: () => {
-            logoutUser();
-          },
-        },
-        // The "No" button
-        // Does nothing but dismiss the dialog when tapped
-        {
-          text: 'No',
-        },
-      ],
-    );
+  // Show alert poup
+  const showDialog = () => {
+    return setShowAlert(true);
+  };
+  // Hide alert popup
+  const handleCancel = () => {
+    return setShowAlert(false);
+  };
+  // Logout user
+  const handleLogout = async () => {
+    await logoutUser();
   };
 
   return (
@@ -145,7 +146,16 @@ const SettingsScreen = ({
         bgColor={colors.primary.main}
         textColor={colors.primary.content}
         isAnimating={isLoading}
-        onPress={() => handleLogout()}
+        onPress={() => showDialog()}
+      />
+
+      <AlertPopup
+        visible={showAlert}
+        title='Logout'
+        message='Are you sure you want to logout from MyMoney App?'
+        handleCancel={handleCancel}
+        handleOk={handleLogout}
+        okLabel='Logout'
       />
     </View>
   );

@@ -8,7 +8,6 @@ import {
   TouchableWithoutFeedback,
   Platform,
   Keyboard,
-  ActivityIndicator,
 } from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import FormButton from '_components/atoms/FormButton';
@@ -19,7 +18,7 @@ import AddCurrencyModal from '_components/modals/AddCurrencyModal';
 import {connect} from 'react-redux';
 import {getUser, updateUser} from '_redux/actions/user';
 
-const ProfileScreen = ({getUser, updateUser, userState, authState}) => {
+const ProfileScreen = ({getUser, updateUser, userState}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
@@ -121,14 +120,12 @@ const useStyles = colors =>
   });
 
 ProfileScreen.propTypes = {
-  authState: PropTypes.object.isRequired,
   userState: PropTypes.object.isRequired,
   getUser: PropTypes.func.isRequired,
   updateUser: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-  authState: state.authState,
   userState: state.userState,
 });
 

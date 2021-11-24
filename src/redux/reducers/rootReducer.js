@@ -5,6 +5,7 @@ import userReducer from './userReducer';
 import categoryReducer from './categoryReducer';
 import transactionsReducer from './transactionsReducer';
 import timeReducer from './timeReducer';
+import ratesReducer from './ratesReducer';
 
 export default combineReducers({
   authState: authReducer,
@@ -12,4 +13,5 @@ export default combineReducers({
   catState: categoryReducer,
   transactionsState: transactionsReducer,
   timeState: timeReducer,
+  ratesState: ratesReducer,
 });

@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, Text, View, Alert} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import FormButton from '_components/atoms/FormButton';
 import AlertInputPopup from '_components/atoms/AlertInputPopup';
@@ -12,27 +12,32 @@ const DangerousZoneScreen = ({userState, removeUser}) => {
   const {colors} = useTheme();
   const styles = useStyles(colors);
 
-  const [visible, setVisible] = useState(false);
+  // Show or hide alert popup
+  const [showAlert, setShowAlert] = useState(false);
   const [password, setPassword] = useState('');
   const [isError, setIsError] = useState(false);
 
   const {isLoading} = userState;
 
+  useEffect(() => {
+    return () => {
+      setPassword('');
+    };
+  }, []);
+
   const showDialog = () => {
-    setVisible(true);
+    setShowAlert(true);
   };
 
   const handleCancel = () => {
-    return setVisible(false);
+    return setShowAlert(false);
   };
 
   const handleDelete = async () => {
-    // ...Your logic
     if (password !== '') {
       setIsError(false);
+      setShowAlert(false);
       await removeUser(password);
-      setVisible(false);
-      setPassword('');
     } else {
       setIsError(true);
     }
@@ -59,7 +64,7 @@ const DangerousZoneScreen = ({userState, removeUser}) => {
       />
 
       <AlertInputPopup
-        visible={visible}
+        visible={showAlert}
         title='Account delete'
         message='Do you want to delete this account? You cannot undo this action.'
         inputValue={password}

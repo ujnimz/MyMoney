@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, View, Alert} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {useTheme} from '_theme/ThemeContext';
 import AddIconModal from '_components/modals/AddIconModal';
 import FormButton from '_components/atoms/FormButton';
@@ -71,8 +71,6 @@ const AddCategoryScreen = ({
   const handleDelete = async () => {
     if (id) {
       await deleteCat(id);
-      setId(undefined);
-      setShowAlert(false);
     }
     return;
   };
@@ -85,6 +83,8 @@ const AddCategoryScreen = ({
     }
     return () => {
       rollbackCompleted();
+      setId(undefined);
+      setShowAlert(false);
     };
   }, [isCompleted]);
 
