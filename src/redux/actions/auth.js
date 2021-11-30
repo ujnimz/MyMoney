@@ -143,16 +143,16 @@ export const registerUser = user => async dispatch => {
       message: 'Please add your name.',
       type: 'warning',
     });
-  // if (email === '')
-  //   return showMessage({
-  //     message: 'Please add a valid email.',
-  //     type: 'warning',
-  //   });
-  // if (password === '')
-  //   return showMessage({
-  //     message: 'Please add a password.',
-  //     type: 'warning',
-  //   });
+  if (email === '')
+    return showMessage({
+      message: 'Please add a valid email.',
+      type: 'warning',
+    });
+  if (password === '')
+    return showMessage({
+      message: 'Please add a password.',
+      type: 'warning',
+    });
   dispatch(setAuthLoading());
   try {
     const userCredential = await createUserWithEmailAndPassword(
