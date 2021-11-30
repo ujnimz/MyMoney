@@ -36,7 +36,9 @@ export const setAuthLoading = () => {
 // AUTH STATUS
 export const authStatus = () => async dispatch => {
   try {
+    //const isNewUser = auth.AdditionalUserInfo.isNewUser;
     await onAuthStateChanged(auth, user => {
+      //console.log(user);
       if (user) {
         return dispatch({
           type: AUTH_SUCCESS,
@@ -50,6 +52,7 @@ export const authStatus = () => async dispatch => {
       }
     });
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case 'auth/user-token-expired':
         showMessage({
@@ -140,16 +143,16 @@ export const registerUser = user => async dispatch => {
       message: 'Please add your name.',
       type: 'warning',
     });
-  if (email === '')
-    return showMessage({
-      message: 'Please add a valid email.',
-      type: 'warning',
-    });
-  if (password === '')
-    return showMessage({
-      message: 'Please add a password.',
-      type: 'warning',
-    });
+  // if (email === '')
+  //   return showMessage({
+  //     message: 'Please add a valid email.',
+  //     type: 'warning',
+  //   });
+  // if (password === '')
+  //   return showMessage({
+  //     message: 'Please add a password.',
+  //     type: 'warning',
+  //   });
   dispatch(setAuthLoading());
   try {
     const userCredential = await createUserWithEmailAndPassword(
@@ -157,6 +160,7 @@ export const registerUser = user => async dispatch => {
       email,
       password,
     );
+    console.log(userCredential);
     await setDoc(doc(db, 'users', userCredential.user.uid), {
       name: name,
       currency: 'BHD',
@@ -174,6 +178,7 @@ export const registerUser = user => async dispatch => {
       payload: userCredential.user.email,
     });
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case 'auth/email-already-in-use':
         showMessage({

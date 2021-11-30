@@ -26,7 +26,7 @@ const SplashScreen = ({
   if (isInitializing) {
     return <LoadingScreen />;
   }
-
+  //console.log(user);
   if (!user) {
     return <AuthNavStack />;
   }
