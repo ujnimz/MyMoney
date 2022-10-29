@@ -8,24 +8,9 @@ import {
   DELETE_USER_FAIL,
 } from './types';
 
-import {
-  auth,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-  db,
-  doc,
-  getDoc,
-  updateDoc,
-  deleteUser,
-  Timestamp,
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  deleteDoc,
-  writeBatch,
-} from '_firebase/fbConfig';
+import firebase from 'firebase/app';
+
+import {auth, EmailAuthProvider, db} from '_firebase/fbConfig';
 
 import {showMessage} from 'react-native-flash-message';
 
@@ -40,11 +25,11 @@ export const setUserLoading = () => {
 export const getUser = () => async dispatch => {
   dispatch(setUserLoading());
   try {
-    const user = auth.currentUser;
-    const docRef = doc(db, 'users', user.uid);
-    const docSnap = await getDoc(docRef);
+    const user = firebase.auth().currentUser;
+    const docRef = db.collection('users').doc(user.uid);
+    const docSnap = await docRef.get();
     let userData = null;
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
       //console.log('Document data:', docSnap.data());
       userData = docSnap.data();
     } else {
@@ -60,6 +45,7 @@ export const getUser = () => async dispatch => {
       payload: userData,
     });
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
         showMessage({
@@ -94,13 +80,13 @@ export const updateUser = userData => async dispatch => {
     });
   dispatch(setUserLoading());
   try {
-    const user = auth.currentUser;
-    const docRef = doc(db, 'users', user.uid);
-    await updateDoc(docRef, {
+    const user = firebase.auth().currentUser;
+    const docRef = db.collection('users').doc(user.uid);
+    await docRef.update({
       name,
       currency,
       image,
-      updatedAt: Timestamp.now(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
     dispatch(getUser());
 
@@ -135,43 +121,39 @@ export const updateUser = userData => async dispatch => {
 export const removeUser = password => async dispatch => {
   dispatch(setUserLoading());
   try {
-    const user = auth.currentUser;
+    const user = firebase.auth().currentUser;
 
     const credentials = await EmailAuthProvider.credential(
       user.email,
       password,
     );
-    await reauthenticateWithCredential(user, credentials);
+    await user.reauthenticateWithCredential(credentials);
 
-    const batch = writeBatch(db);
+    const batch = db.batch();
 
     // To Delete all the transactions
-    const traRef = collection(db, 'transactions');
-    const traQ = query(
-      traRef,
-      where('uid', '==', user.uid),
-      orderBy('date', 'desc'),
-    );
-    const traQSnapshot = await getDocs(traQ);
+    const traRef = db.collection('transactions');
+    const traQ = traRef.where('uid', '==', user.uid).orderBy('date', 'desc');
+    const traQSnapshot = await traQ.get();
     traQSnapshot.forEach(({id}) => {
-      const traDocRef = doc(db, 'transactions', id);
+      const traDocRef = db.collection('transactions').doc(id);
       batch.delete(traDocRef);
     });
 
     // To Delete all the categories
-    const catRef = collection(db, 'categories');
-    const catQ = query(catRef, where('uid', '==', user.uid));
-    const catQSnapshot = await getDocs(catQ);
+    const catRef = db.collection('categories');
+    const catQ = catRef.where('uid', '==', user.uid);
+    const catQSnapshot = await catQ.get();
     catQSnapshot.forEach(({id}) => {
-      const catDocRef = doc(db, 'categories', id);
+      const catDocRef = db.collection('categories').doc(id);
       batch.delete(catDocRef);
     });
     // Delete all the transactions and categories
     await batch.commit();
     // Delete user details document
-    await deleteDoc(doc(db, 'users', user.uid));
+    await db.collection('users').doc(user.uid).delete();
     // Finally delete the user account
-    await deleteUser(user);
+    await user.delete();
 
     showMessage({
       message: 'Profile deleted successfully.',

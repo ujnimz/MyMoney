@@ -11,20 +11,9 @@ import {
   DELETE_CAT_FAIL,
 } from './types';
 
-import {
-  auth,
-  db,
-  doc,
-  addDoc,
-  setDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  collection,
-  query,
-  where,
-} from '_firebase/fbConfig';
+import firebase from 'firebase/app';
+
+import {auth, db} from '_firebase/fbConfig';
 
 import {showMessage} from 'react-native-flash-message';
 
@@ -47,14 +36,14 @@ export const getCat = () => async dispatch => {
   dispatch(setCatLoading());
   try {
     let catData = [];
-    const user = auth.currentUser;
+    const user = firebase.auth().currentUser;
 
-    const catRef = collection(db, 'categories');
+    const catRef = db.collection('categories');
 
     // Create a query against the collection.
-    const q = query(catRef, where('uid', '==', user.uid));
+    const q = catRef.where('uid', '==', user.uid);
 
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await q.get();
     querySnapshot.forEach(doc => {
       // doc.data() is never undefined for query doc snapshots
       const data = doc.data();
@@ -68,6 +57,7 @@ export const getCat = () => async dispatch => {
       payload: catData,
     });
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
         showMessage({
@@ -107,10 +97,10 @@ export const addCat = newCat => async dispatch => {
     });
   dispatch(setCatLoading());
   try {
-    const user = auth.currentUser;
+    const user = firebase.auth().currentUser;
     newCat.uid = user.uid;
 
-    await addDoc(collection(db, 'categories'), newCat);
+    await db.collection('categories').add(newCat);
 
     dispatch(getCat());
 
@@ -123,6 +113,7 @@ export const addCat = newCat => async dispatch => {
       type: ADD_CAT_SUCCESS,
     });
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
         showMessage({
@@ -159,7 +150,10 @@ export const updateCat = newCat => async dispatch => {
   try {
     const user = auth.currentUser;
 
-    await setDoc(doc(db, 'categories', id), {uid: user.uid, title, icon, type});
+    await db
+      .collection('categories')
+      .doc(id)
+      .update({uid: user.uid, title, icon, type});
     dispatch(getCat());
 
     showMessage({
@@ -194,7 +188,7 @@ export const updateCat = newCat => async dispatch => {
 export const deleteCat = catId => async dispatch => {
   dispatch(setCatLoading());
   try {
-    await deleteDoc(doc(db, 'categories', catId));
+    await db.collection('categories').doc(catId).delete();
 
     dispatch(getCat());
 

@@ -16,22 +16,9 @@ import {
   GET_PREVIOUS_TIME,
 } from './types';
 
-import {
-  auth,
-  db,
-  doc,
-  addDoc,
-  setDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  collection,
-  query,
-  where,
-  Timestamp,
-  orderBy,
-} from '_firebase/fbConfig';
+import firebase from 'firebase/app';
+
+import {db} from '_firebase/fbConfig';
 
 import {getThisYear, getThisMonthIndex} from '_utils/useDateTime';
 
@@ -56,20 +43,15 @@ export const getTransactions = () => async dispatch => {
   dispatch(setTransactionLoading());
   try {
     let catData = [];
-    const user = auth.currentUser;
+    const user = firebase.auth().currentUser;
 
-    const catRef = collection(db, 'transactions');
+    const catRef = db.collection('transactions');
 
     // Create a query against the collection.
-    const q = query(
-      catRef,
-      where('uid', '==', user.uid),
-      orderBy('date', 'desc'),
-    );
+    const q = catRef.where('uid', '==', user.uid).orderBy('date', 'desc');
 
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await q.get();
     querySnapshot.forEach(doc => {
-      // doc.data() is never undefined for query doc snapshots
       const data = doc.data();
       data.id = doc.id;
       delete data.uid;
@@ -80,6 +62,7 @@ export const getTransactions = () => async dispatch => {
       payload: catData,
     });
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
         showMessage({
@@ -104,20 +87,18 @@ export const getTransactionsByDate = (month, year) => async dispatch => {
   dispatch(setTransactionLoading());
   try {
     let catData = [];
-    const user = auth.currentUser;
+    const user = firebase.auth().currentUser;
 
-    const catRef = collection(db, 'transactions');
+    const catRef = db.collection('transactions');
 
     // Create a query against the collection.
-    const q = query(
-      catRef,
-      where('uid', '==', user.uid),
-      where('month', '==', month),
-      where('year', '==', year),
-      orderBy('date', 'desc'),
-    );
+    const q = catRef
+      .where('uid', '==', user.uid)
+      .where('month', '==', month)
+      .where('year', '==', year)
+      .orderBy('date', 'desc');
 
-    const querySnapshot = await getDocs(q);
+    const querySnapshot = await q.get();
     querySnapshot.forEach(doc => {
       // doc.data() is never undefined for query doc snapshots
       const data = doc.data();
@@ -131,6 +112,7 @@ export const getTransactionsByDate = (month, year) => async dispatch => {
       payload: catData,
     });
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
         showMessage({
@@ -175,12 +157,12 @@ export const addTransaction = newTransaction => async dispatch => {
     });
   dispatch(setTransactionLoading());
   try {
-    const user = auth.currentUser;
+    const user = firebase.auth().currentUser;
     newTransaction.uid = user.uid;
-    newTransaction.createdAt = Timestamp.now();
-    newTransaction.date = Timestamp.fromDate(date);
+    newTransaction.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    newTransaction.date = firebase.firestore.Timestamp.fromDate(date);
 
-    await addDoc(collection(db, 'transactions'), newTransaction);
+    await db.collection('transactions').add(newTransaction);
 
     dispatch(getTransactionsByDate(getThisMonthIndex(), getThisYear()));
 
@@ -193,6 +175,7 @@ export const addTransaction = newTransaction => async dispatch => {
       type: ADD_TRANSACTION_SUCCESS,
     });
   } catch (error) {
+    console.log(error);
     switch (error.code) {
       case 'auth/invalid-email':
         showMessage({
@@ -227,9 +210,8 @@ export const updateTransaction = newTransaction => async dispatch => {
     });
   dispatch(setTransactionLoading());
   try {
-    const user = auth.currentUser;
-
-    await setDoc(doc(db, 'transactions', id), {
+    const user = firebase.auth().currentUser;
+    await db.collection('transactions').doc(id).update({
       uid: user.uid,
       title,
       icon,
@@ -269,7 +251,7 @@ export const updateTransaction = newTransaction => async dispatch => {
 export const deleteTransaction = catId => async dispatch => {
   dispatch(setTransactionLoading());
   try {
-    await deleteDoc(doc(db, 'transactions', catId));
+    await db.collection('transactions').doc(catId).delete();
     dispatch(getTransactions());
 
     showMessage({

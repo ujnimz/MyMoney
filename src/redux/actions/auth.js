@@ -10,19 +10,9 @@ import {
   LOGOUT_FAIL,
 } from './types';
 
-import {
-  auth,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  updateProfile,
-  signOut,
-  db,
-  doc,
-  addDoc,
-  setDoc,
-  Timestamp,
-} from '_firebase/fbConfig';
+import {db} from '_firebase/fbConfig';
+
+import firebase from 'firebase/app';
 
 import {showMessage} from 'react-native-flash-message';
 
@@ -36,9 +26,7 @@ export const setAuthLoading = () => {
 // AUTH STATUS
 export const authStatus = () => async dispatch => {
   try {
-    //const isNewUser = auth.AdditionalUserInfo.isNewUser;
-    await onAuthStateChanged(auth, user => {
-      //console.log(user);
+    await firebase.auth().onAuthStateChanged(user => {
       if (user) {
         return dispatch({
           type: AUTH_SUCCESS,
@@ -52,7 +40,6 @@ export const authStatus = () => async dispatch => {
       }
     });
   } catch (error) {
-    console.log(error);
     switch (error.code) {
       case 'auth/user-token-expired':
         showMessage({
@@ -87,11 +74,9 @@ export const loginUser = user => async dispatch => {
     });
   dispatch(setAuthLoading());
   try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
+    const userCredential = await firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password);
     return dispatch({
       type: LOGIN_SUCCESS,
       payload: userCredential.user,
@@ -155,17 +140,14 @@ export const registerUser = user => async dispatch => {
     });
   dispatch(setAuthLoading());
   try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
-    console.log(userCredential);
-    await setDoc(doc(db, 'users', userCredential.user.uid), {
+    const userCredential = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password);
+    await db.collection('users').doc(userCredential.user.uid).set({
       name: name,
       currency: 'BHD',
       image: '',
-      createdAt: Timestamp.now(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
 
     showMessage({
@@ -214,7 +196,7 @@ export const registerUser = user => async dispatch => {
 export const logoutUser = () => async dispatch => {
   dispatch(setAuthLoading());
   try {
-    await signOut(auth);
+    await firebase.auth().signOut();
 
     showMessage({
       message: 'You are signed out successfully.',
