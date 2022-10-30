@@ -10,7 +10,7 @@ import {
 
 import firebase from 'firebase/app';
 
-import {auth, EmailAuthProvider, db} from '_firebase/fbConfig';
+import {EmailAuthProvider, db} from '_firebase/fbConfig';
 
 import {showMessage} from 'react-native-flash-message';
 
